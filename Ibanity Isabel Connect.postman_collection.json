@@ -1,0 +1,752 @@
+{
+	"info": {
+		"_postman_id": "82cf8b94-b616-4102-925d-bb232ef52aac",
+		"name": "Ibanity Isabel Connect",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "0. Root",
+			"item": [
+				{
+					"name": "0.0: API Root",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Digest",
+								"value": "{{digestHeader}}",
+								"type": "text"
+							},
+							{
+								"key": "Signature",
+								"value": "{{signatureHeader}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "https://{{ibanity-hostname}}/isabel-connect/",
+							"protocol": "https",
+							"host": [
+								"{{ibanity-hostname}}"
+							],
+							"path": [
+								"isabel-connect",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "1. Onboarding",
+			"item": [
+				{
+					"name": "1.2: Create Refresh Token (Authorization Code Exchange)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"pm.test(\"Answer is valid\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.scope).to.eql('cloudconnect');",
+									"    pm.expect(jsonData.token_type).to.eql('Bearer');",
+									"});",
+									"var jsonData = JSON.parse(responseBody);",
+									"pm.environment.set(\"isabel-connect-access-token\", jsonData.access_token);",
+									"pm.environment.set(\"isabel-connect-refresh-token\", jsonData.refresh_token);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{isabel-connect-client-secret}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{isabel-connect-client-id}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "grant_type",
+									"value": "authorization_code",
+									"type": "text"
+								},
+								{
+									"key": "code",
+									"value": "valid_authorization_code",
+									"type": "text"
+								},
+								{
+									"key": "redirect_uri",
+									"value": "https://postman.localhost",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "https://{{ibanity-hostname}}/isabel-connect/oauth2/token",
+							"protocol": "https",
+							"host": [
+								"{{ibanity-hostname}}"
+							],
+							"path": [
+								"isabel-connect",
+								"oauth2",
+								"token"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "1.3: Refresh Token",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"pm.test(\"Answer is valid\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.scope).to.eql('cloudconnect');",
+									"    pm.expect(jsonData.token_type).to.eql('Bearer');",
+									"});",
+									"var jsonData = JSON.parse(responseBody);",
+									"pm.environment.set(\"isabel-connect-access-token\", jsonData.access_token);",
+									"pm.environment.set(\"isabel-connect-refresh-token\", jsonData.refresh_token);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{isabel-connect-client-secret}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{isabel-connect-client-id}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "grant_type",
+									"value": "refresh_token",
+									"type": "text"
+								},
+								{
+									"key": "refresh_token",
+									"value": "{{isabel-connect-refresh-token}}",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "https://{{ibanity-hostname}}/isabel-connect/oauth2/token",
+							"protocol": "https",
+							"host": [
+								"{{ibanity-hostname}}"
+							],
+							"path": [
+								"isabel-connect",
+								"oauth2",
+								"token"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "2. Accounts & Transactions",
+			"item": [
+				{
+					"name": "2.1: List Accounts",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"pm.environment.set(\"isabel-connect-account-id\", jsonData.data[0].id);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Digest",
+								"value": "{{digestHeader}}",
+								"type": "text"
+							},
+							{
+								"key": "Signature",
+								"value": "{{signatureHeader}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "https://{{ibanity-hostname}}/isabel-connect/accounts",
+							"protocol": "https",
+							"host": [
+								"{{ibanity-hostname}}"
+							],
+							"path": [
+								"isabel-connect",
+								"accounts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "2.2: Get Account",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Digest",
+								"value": "{{digestHeader}}",
+								"type": "text"
+							},
+							{
+								"key": "Signature",
+								"value": "{{signatureHeader}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "https://{{ibanity-hostname}}/isabel-connect/accounts/{{isabel-connect-account-id}}",
+							"protocol": "https",
+							"host": [
+								"{{ibanity-hostname}}"
+							],
+							"path": [
+								"isabel-connect",
+								"accounts",
+								"{{isabel-connect-account-id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "2.3: Get Account Balance",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Digest",
+								"type": "text",
+								"value": "{{digestHeader}}"
+							},
+							{
+								"key": "Signature",
+								"type": "text",
+								"value": "{{signatureHeader}}"
+							}
+						],
+						"url": {
+							"raw": "https://{{ibanity-hostname}}/isabel-connect/accounts/{{isabel-connect-account-id}}/balances",
+							"protocol": "https",
+							"host": [
+								"{{ibanity-hostname}}"
+							],
+							"path": [
+								"isabel-connect",
+								"accounts",
+								"{{isabel-connect-account-id}}",
+								"balances"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "2.4: Get Account Transactions",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Digest",
+								"value": "{{digestHeader}}",
+								"type": "text"
+							},
+							{
+								"key": "Signature",
+								"value": "{{signatureHeader}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "https://{{ibanity-hostname}}/isabel-connect/accounts/{{isabel-connect-account-id}}/transactions",
+							"protocol": "https",
+							"host": [
+								"{{ibanity-hostname}}"
+							],
+							"path": [
+								"isabel-connect",
+								"accounts",
+								"{{isabel-connect-account-id}}",
+								"transactions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "2.5: List Account Reports",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"pm.environment.set(\"isabel-connect-account-report-id\", jsonData.data[0].id);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Digest",
+								"value": "{{digestHeader}}",
+								"type": "text"
+							},
+							{
+								"key": "Signature",
+								"value": "{{signatureHeader}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "https://{{ibanity-hostname}}/isabel-connect/account-reports",
+							"protocol": "https",
+							"host": [
+								"{{ibanity-hostname}}"
+							],
+							"path": [
+								"isabel-connect",
+								"account-reports"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "2.6: Get Account Report",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Digest",
+								"value": "{{digestHeader}}",
+								"type": "text"
+							},
+							{
+								"key": "Signature",
+								"value": "{{signatureHeader}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "https://{{ibanity-hostname}}/isabel-connect/account-reports/{{isabel-connect-account-report-id}}",
+							"protocol": "https",
+							"host": [
+								"{{ibanity-hostname}}"
+							],
+							"path": [
+								"isabel-connect",
+								"account-reports",
+								"{{isabel-connect-account-report-id}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "3. Bulk Payment Initiation Requests",
+			"item": [
+				{
+					"name": "3.1: Create Bulk payment initiation request",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"pm.environment.set(\"isabel-connect-bulk-payment-initiation-request-id\", jsonData.data.id);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Digest",
+								"type": "text",
+								"value": "{{digestHeader}}"
+							},
+							{
+								"key": "Signature",
+								"type": "text",
+								"value": "{{signatureHeader}}"
+							},
+							{
+								"key": "Content-Disposition",
+								"value": "inline; filename=\"new_custom_filename.xml\"",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<Document xmlns=\"urn:iso:std:iso:20022:tech:xsd:pain.001.001.03\"\r\n  xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\r\n  <CstmrCdtTrfInitn>\r\n    <GrpHdr>\r\n      <MsgId>5065</MsgId>\r\n      <CreDtTm>2019-03-19T15:42:09</CreDtTm>\r\n      <NbOfTxs>4</NbOfTxs>\r\n      <CtrlSum>1854.50</CtrlSum>\r\n      <InitgPty>\r\n        <Nm>Test party</Nm>\r\n        <Id>\r\n          <OrgId>\r\n            <Othr>\r\n              <Id>0455.530.509</Id>\r\n              <Issr>KBO-BCE</Issr>\r\n            </Othr>\r\n          </OrgId>\r\n        </Id>\r\n      </InitgPty>\r\n    </GrpHdr>\r\n    <PmtInf>\r\n      <PmtInfId>5065</PmtInfId>\r\n      <PmtMtd>TRF</PmtMtd>\r\n      <BtchBookg>true</BtchBookg>\r\n      <NbOfTxs>4</NbOfTxs>\r\n      <CtrlSum>1854.50</CtrlSum>\r\n      <ReqdExctnDt>2013-03-14</ReqdExctnDt>\r\n      <Dbtr>\r\n        <Nm>Debtor Dossier</Nm>\r\n        <PstlAdr>\r\n          <Ctry>BE</Ctry>\r\n          <AdrLine>Straat 34</AdrLine>\r\n          <AdrLine>1000 Brussels</AdrLine>\r\n        </PstlAdr>\r\n      </Dbtr>\r\n      <DbtrAcct>\r\n        <Id>\r\n          <IBAN>BE17000000002342</IBAN>\r\n        </Id>\r\n      </DbtrAcct>\r\n      <DbtrAgt>\r\n        <FinInstnId>\r\n          <BIC>BPOTBEB1</BIC>\r\n        </FinInstnId>\r\n      </DbtrAgt>\r\n      <CdtTrfTxInf>\r\n        <PmtId>\r\n          <EndToEndId>Y12345-13</EndToEndId>\r\n        </PmtId>\r\n        <Amt>\r\n          <InstdAmt Ccy=\"EUR\">850.00</InstdAmt>\r\n        </Amt>\r\n        <Cdtr>\r\n          <Nm>Alex</Nm>\r\n          <PstlAdr>\r\n            <Ctry>BE</Ctry>\r\n            <AdrLine>alexstr</AdrLine>\r\n            <AdrLine>3000 Antwerp</AdrLine>\r\n          </PstlAdr>\r\n        </Cdtr>\r\n        <CdtrAcct>\r\n          <Id>\r\n            <IBAN>BE012345665432</IBAN>\r\n          </Id>\r\n        </CdtrAcct>\r\n      </CdtTrfTxInf>\r\n      <CdtTrfTxInf>\r\n        <PmtId>\r\n          <EndToEndId>YLSdsq13</EndToEndId>\r\n        </PmtId>\r\n        <Amt>\r\n          <InstdAmt Ccy=\"USD\">100.00</InstdAmt>\r\n        </Amt>\r\n        <Cdtr>\r\n          <Nm>Yvan9</Nm>\r\n          <PstlAdr>\r\n            <Ctry>BE</Ctry>\r\n            <AdrLine>Street</AdrLine>\r\n            <AdrLine>3440 ZOUTLEEUW</AdrLine>\r\n          </PstlAdr>\r\n        </Cdtr>\r\n        <CdtrAcct>\r\n          <Id>\r\n            <IBAN>BE2345676543223</IBAN>\r\n          </Id>\r\n        </CdtrAcct>\r\n      </CdtTrfTxInf>\r\n      <CdtTrfTxInf>\r\n        <PmtId>\r\n          <EndToEndId>YLSdsdqs-13</EndToEndId>\r\n        </PmtId>\r\n        <Amt>\r\n          <InstdAmt Ccy=\"EUR\">700.00</InstdAmt>\r\n        </Amt>\r\n        <Cdtr>\r\n          <Nm>Alex</Nm>\r\n          <PstlAdr>\r\n            <Ctry>BE</Ctry>\r\n            <AdrLine>alexstr</AdrLine>\r\n            <AdrLine>3440 Zoutleeuw</AdrLine>\r\n          </PstlAdr>\r\n        </Cdtr>\r\n        <CdtrAcct>\r\n          <Id>\r\n            <IBAN>BE2345676543223</IBAN>\r\n          </Id>\r\n        </CdtrAcct>\r\n        <RmtInf>\r\n          <Strd>\r\n            <CdtrRefInf>\r\n              <Tp>\r\n                <CdOrPrtry>\r\n                  <Cd>SCOR</Cd>\r\n                </CdOrPrtry>\r\n                <Issr>BBA</Issr>\r\n              </Tp>\r\n              <Ref>12345678</Ref>\r\n            </CdtrRefInf>\r\n          </Strd>\r\n        </RmtInf>\r\n      </CdtTrfTxInf>\r\n      <CdtTrfTxInf>\r\n        <PmtId>\r\n          <EndToEndId>Y2-13</EndToEndId>\r\n        </PmtId>\r\n        <Amt>\r\n          <InstdAmt Ccy=\"EUR\">204.50</InstdAmt>\r\n        </Amt>\r\n        <Cdtr>\r\n          <Nm>Alex</Nm>\r\n          <PstlAdr>\r\n            <Ctry>BE</Ctry>\r\n            <AdrLine>alexstr</AdrLine>\r\n            <AdrLine>3440 Zoutleeuw</AdrLine>\r\n          </PstlAdr>\r\n        </Cdtr>\r\n        <CdtrAcct>\r\n          <Id>\r\n            <IBAN>BE2345676543223</IBAN>\r\n          </Id>\r\n        </CdtrAcct>\r\n      </CdtTrfTxInf>\r\n    </PmtInf>\r\n  </CstmrCdtTrfInitn>\r\n</Document>\r\n",
+							"options": {
+								"raw": {
+									"language": "xml"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://{{ibanity-hostname}}/isabel-connect/bulk-payment-initiation-requests",
+							"protocol": "https",
+							"host": [
+								"{{ibanity-hostname}}"
+							],
+							"path": [
+								"isabel-connect",
+								"bulk-payment-initiation-requests"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "3.2: Get Bulk payment initiation request",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Digest",
+								"type": "text",
+								"value": "{{digestHeader}}"
+							},
+							{
+								"key": "Signature",
+								"type": "text",
+								"value": "{{signatureHeader}}"
+							}
+						],
+						"url": {
+							"raw": "https://{{ibanity-hostname}}/isabel-connect/bulk-payment-initiation-requests/{{isabel-connect-bulk-payment-initiation-request-id}}",
+							"protocol": "https",
+							"host": [
+								"{{ibanity-hostname}}"
+							],
+							"path": [
+								"isabel-connect",
+								"bulk-payment-initiation-requests",
+								"{{isabel-connect-bulk-payment-initiation-request-id}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "4. Disconnect",
+			"item": [
+				{
+					"name": "4.1: Revoke Token",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "https://{{ibanity-hostname}}/isabel-connect/oauth2/revoke",
+							"protocol": "https",
+							"host": [
+								"{{ibanity-hostname}}"
+							],
+							"path": [
+								"isabel-connect",
+								"oauth2",
+								"revoke"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{isabel-connect-access-token}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"var url = require(\"url\");",
+					"if (!pm.globals.has(\"forgeJS\")) {",
+					"    console.log(\"Downloading forgejs\")",
+					"    pm.sendRequest(\"https://raw.githubusercontent.com/loveiset/RSAForPostman/master/forge.js\", function (err, res) {",
+					"        if (err) {",
+					"            console.log(\"an error occured\");",
+					"            console.log(err);",
+					"        }",
+					"        else {",
+					"            console.log(\"Setting forge JS\")",
+					"            pm.globals.set(\"forgeJS\", res.text());",
+					"            //console.log(pm.globals.get(\"forgeJS\"));",
+					"            eval(pm.globals.get(\"forgeJS\"));",
+					"            run();",
+					"        }",
+					"    });",
+					"}",
+					"else {",
+					"    eval(pm.globals.get(\"forgeJS\"));",
+					"    run();",
+					"}",
+					"function base64UrlEncode(raw) {",
+					"    return btoa(raw);",
+					"}",
+					"function replacePostmanVariables(value) {",
+					"    return value.replace(/\\{\\{[^\\{]+\\}\\}/g, function (variableTemplate) {",
+					"        let variableName = variableTemplate.replace(\"{{\", \"\").replace(\"}}\", \"\");",
+					"        return pm.variables.get(variableName);",
+					"    });",
+					"}",
+					"function buildHostHeader() {",
+					"    return pm.request.url.host.join(\".\");",
+					"}",
+					"function buildDigestHeader() {",
+					"    let rawBody;",
+					"    if (!!pm.request.body) {",
+					"        rawBody = pm.request.body.raw || \"\";",
+					"    } else {",
+					"        rawBody = \"\";",
+					"    }",
+					"    let instantiatedBody = replacePostmanVariables(rawBody);",
+					"    let messageDigest = forge.md.sha512.create();",
+					"    messageDigest.update(instantiatedBody);",
+					"    return \"SHA-512=\" + base64UrlEncode(messageDigest.digest().data);",
+					"}",
+					"function buildRequestQueryParams() {",
+					"    var returnValue = \"\";",
+					"    pm.request.url.query.members.forEach(function (i) {",
+					"        returnValue += i.key + \"=\" + i.value + \"&\"",
+					"    });",
+					"    if (returnValue.endsWith(\"&\")) {",
+					"        returnValue = returnValue.substring(0, returnValue.length - 1);",
+					"    }",
+					"    if (returnValue.length > 0) {",
+					"        return \"?\" + returnValue;",
+					"    } else {",
+					"        return \"\";",
+					"    }",
+					"}",
+					"function buildRequestTargetHeader() {",
+					"    let httpMethod = pm.request.method.toLowerCase();",
+					"    let requestPath = pm.request.url.path.join(\"/\");",
+					"    let query = buildRequestQueryParams();",
+					"    return `${httpMethod} /${requestPath}${query}`;",
+					"}",
+					"function addOptionalSignedHeaders(headers) {",
+					"    pm.request.headers.members.forEach(function (headerObject) {",
+					"        let headerName = headerObject.key.toLowerCase();",
+					"        if (headerName == \"authorization\" || headerName.match(/^ibanity-.+/) && headerObject.disabled !== true) {",
+					"            headers[headerName] = headerObject.value;",
+					"        }",
+					"    });",
+					"}",
+					"function buildSigningString(headers) {",
+					"    let rawSigningString = Object.keys(headers).map(function (headerName) {",
+					"        return `${headerName}: ${headers[headerName]}`;",
+					"    }).join(\"\\n\");",
+					"    return replacePostmanVariables(rawSigningString);",
+					"}",
+					"function buildSignedHeaderList(headers) {",
+					"    return Object.keys(headers).join(\" \");",
+					"}",
+					"function loadPrivateKey(privateKeyPem, privateKeyPassphrase) {",
+					"    return forge.pki.decryptRsaPrivateKey(privateKeyPem, privateKeyPassphrase);",
+					"}",
+					"function buildEncodedSignature(privateKey, signingString) {",
+					"    let messageDigest = forge.md.sha256.create();",
+					"    messageDigest.update(signingString, \"utf8\");",
+					"    let pss = forge.pss.create({",
+					"      md: forge.md.sha256.create(),",
+					"      mgf: forge.mgf.mgf1.create(forge.md.sha256.create()),",
+					"      saltLength: 32",
+					"    });",
+					"    let signature  = privateKey.sign(messageDigest, pss);",
+					"    return base64UrlEncode(signature)",
+					"}",
+					"function buildSignatureHeader(keyId, algorithm, signedHeaders, encodedSignature, created) {",
+					"    return `keyId=\"${keyId}\",created=\"${created}\",algorithm=\"${algorithm}\",headers=\"${signedHeaders}\",signature=\"${encodedSignature}\"`;",
+					"}",
+					"function run() {",
+					"    let created = Date.now() / 1000 | 0",
+					"    let keyId = pm.variables.get(\"signatureKeyId\");",
+					"    let privateKeyPem = pm.variables.get(\"signatureKey\");",
+					"    let privateKeyPassphrase = pm.variables.get(\"signatureKeyPassphrase\");",
+					"    let headers = {",
+					"        \"(request-target)\": buildRequestTargetHeader(),",
+					"        \"host\": buildHostHeader(),",
+					"        \"digest\": buildDigestHeader(),",
+					"        \"(created)\": created",
+					"    };",
+					"    addOptionalSignedHeaders(headers);",
+					"    let signingString = buildSigningString(headers);",
+					"    let algorithm = \"hs2019\";",
+					"    let signedHeaders = buildSignedHeaderList(headers);",
+					"    let privateKey = loadPrivateKey(privateKeyPem, privateKeyPassphrase);",
+					"    let encodedSignature = buildEncodedSignature(privateKey, signingString);",
+					"    let signatureHeader = buildSignatureHeader(keyId, algorithm, signedHeaders, encodedSignature, created);",
+					"    pm.variables.set(\"digestHeader\", headers.digest);",
+					"    pm.variables.set(\"signatureHeader\", signatureHeader);",
+					"}"
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}
