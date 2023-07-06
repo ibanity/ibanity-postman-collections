@@ -1,0 +1,2376 @@
+{
+	"info": {
+		"_postman_id": "699f022c-6fc8-496b-aafd-bcb7f7db331d",
+		"name": "Ibanity XS2A",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "0. Root",
+			"item": [
+				{
+					"name": "0.0: API Root",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Digest",
+								"type": "text",
+								"value": "{{digestHeader}}"
+							},
+							{
+								"key": "Signature",
+								"type": "text",
+								"value": "{{signatureHeader}}"
+							}
+						],
+						"url": {
+							"raw": "https://{{ibanity-hostname}}/",
+							"protocol": "https",
+							"host": [
+								"{{ibanity-hostname}}"
+							],
+							"path": [
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "0.1: List Financial Institutions",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"var firstFinancialInstitution = jsonData.data[0]",
+									"pm.environment.set(\"xs2a-financial-institution-id\", firstFinancialInstitution.id);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Digest",
+								"type": "text",
+								"value": "{{digestHeader}}"
+							},
+							{
+								"key": "Signature",
+								"type": "text",
+								"value": "{{signatureHeader}}"
+							}
+						],
+						"url": {
+							"raw": "https://{{ibanity-hostname}}/financial-institutions?limit=100",
+							"protocol": "https",
+							"host": [
+								"{{ibanity-hostname}}"
+							],
+							"path": [
+								"financial-institutions"
+							],
+							"query": [
+								{
+									"key": "limit",
+									"value": "100"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "0.2: List Financial Institutions Countries",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Digest",
+								"type": "text",
+								"value": "{{digestHeader}}"
+							},
+							{
+								"key": "Signature",
+								"type": "text",
+								"value": "{{signatureHeader}}"
+							}
+						],
+						"url": {
+							"raw": "https://{{ibanity-hostname}}/xs2a/financial-institution-countries",
+							"protocol": "https",
+							"host": [
+								"{{ibanity-hostname}}"
+							],
+							"path": [
+								"xs2a",
+								"financial-institution-countries"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "1. Customers",
+			"item": [
+				{
+					"name": "1.0: Create Customer Access Token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"pm.environment.set(\"xs2a-customer-access-token\", jsonData.data.attributes.token);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Digest",
+								"type": "text",
+								"value": "{{digestHeader}}"
+							},
+							{
+								"key": "Signature",
+								"type": "text",
+								"value": "{{signatureHeader}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"data\": {\n    \"type\": \"customerAccessToken\",\n    \"attributes\": {\n      \"applicationCustomerReference\": \"6267bc68-e0b8-45f8-a3cd-3d9c4ebe787e\"\n    }\n  }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://{{ibanity-hostname}}/xs2a/customer-access-tokens",
+							"protocol": "https",
+							"host": [
+								"{{ibanity-hostname}}"
+							],
+							"path": [
+								"xs2a",
+								"customer-access-tokens"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "2. Sandbox",
+			"item": [
+				{
+					"name": "2.1. Sandbox Financial Institutions",
+					"item": [
+						{
+							"name": "SB 2.1.0: Create Sandbox Financial Institution",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var jsonData = JSON.parse(responseBody);",
+											"pm.environment.set(\"xs2a-financial-institution-id\", jsonData.data.id);",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Digest",
+										"type": "text",
+										"value": "{{digestHeader}}"
+									},
+									{
+										"key": "Signature",
+										"type": "text",
+										"value": "{{signatureHeader}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"data\": {\n\t    \"type\": \"financialInstitution\",\n\t    \"attributes\": {\n\t        \"bic\": \"NBBEBEBB203\",\n\t        \"country\": \"FR\",\n\t        \"logoUrl\": \"https://s3.eu-central-1.amazonaws.com/ibanity-production-financial-institution-assets/sandbox.png\",\n\t        \"name\": \"GrootZZddsdqdsqdqsdqssdqqddqsdZ\",\n            \"singleCallbackUrl\": true,\n            \"timeZone\": \"Europe/Madrid\"\n\t    }\n\t}\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://{{ibanity-hostname}}/sandbox/financial-institutions",
+									"protocol": "https",
+									"host": [
+										"{{ibanity-hostname}}"
+									],
+									"path": [
+										"sandbox",
+										"financial-institutions"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "SB 2.1.1: Update Sandbox Financial Institution",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Digest",
+										"type": "text",
+										"value": "{{digestHeader}}"
+									},
+									{
+										"key": "Signature",
+										"type": "text",
+										"value": "{{signatureHeader}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"data\": {\n        \"attributes\": {\n            \"timeZone\": \"Europe/Madrid\"\n        },\n        \"type\": \"financialInstitution\"\n    }\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://{{ibanity-hostname}}/sandbox/financial-institutions/{{xs2a-sandbox-financial-institution-id}}",
+									"protocol": "https",
+									"host": [
+										"{{ibanity-hostname}}"
+									],
+									"path": [
+										"sandbox",
+										"financial-institutions",
+										"{{xs2a-sandbox-financial-institution-id}}"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "2.2. Sandbox Users",
+					"item": [
+						{
+							"name": "SB 2.2.0: List Sandbox Users",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var jsonData = JSON.parse(responseBody);",
+											"pm.environment.set(\"xs2a-sandbox-financial-institution-userid\", jsonData.data[0].id);",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Digest",
+										"type": "text",
+										"value": "{{digestHeader}}"
+									},
+									{
+										"key": "Signature",
+										"type": "text",
+										"value": "{{signatureHeader}}"
+									}
+								],
+								"url": {
+									"raw": "https://{{ibanity-hostname}}/sandbox/financial-institution-users",
+									"protocol": "https",
+									"host": [
+										"{{ibanity-hostname}}"
+									],
+									"path": [
+										"sandbox",
+										"financial-institution-users"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "2.3. Sandbox Accounts & Transactions",
+					"item": [
+						{
+							"name": "2.3.1. Sandbox Accounts",
+							"item": [
+								{
+									"name": "SB 2.3.1.0: List Sandbox Accounts",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"var jsonData = JSON.parse(responseBody);",
+													"pm.environment.set(\"xs2a-sandbox-account-id\", jsonData.data[0].id);"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Digest",
+												"type": "text",
+												"value": "{{digestHeader}}"
+											},
+											{
+												"key": "Signature",
+												"type": "text",
+												"value": "{{signatureHeader}}"
+											}
+										],
+										"url": {
+											"raw": "https://{{ibanity-hostname}}/sandbox/financial-institutions/{{xs2a-financial-institution-id}}/financial-institution-users/{{xs2a-sandbox-financial-institution-userid}}/financial-institution-accounts?limit=100",
+											"protocol": "https",
+											"host": [
+												"{{ibanity-hostname}}"
+											],
+											"path": [
+												"sandbox",
+												"financial-institutions",
+												"{{xs2a-financial-institution-id}}",
+												"financial-institution-users",
+												"{{xs2a-sandbox-financial-institution-userid}}",
+												"financial-institution-accounts"
+											],
+											"query": [
+												{
+													"key": "limit",
+													"value": "100"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "SB 2.3.1.1: Create Sandbox Account",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"var jsonData = JSON.parse(responseBody);",
+													"",
+													"if (jsonData && jsonData.data && jsonData.data[0]){",
+													"    pm.environment.set('xs2a-sandbox-account-id', jsonData.data[0].id);",
+													"}"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Digest",
+												"type": "text",
+												"value": "{{digestHeader}}"
+											},
+											{
+												"key": "Signature",
+												"type": "text",
+												"value": "{{signatureHeader}}"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n  \"data\": {\n    \"type\": \"financialInstitutionAccount\",\n    \"attributes\": {\n      \"subtype\": \"checking\",\n      \"reference\": \"BE7234567811232\",\n      \"referenceType\": \"IBAN\",\n      \"description\": \"ola account\",\n      \"currency\": \"USD\",\n      \"product\": \"Easy account basic\",\n      \"holderName\": \"J. Doe\"\n    }\n  }\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "https://{{ibanity-hostname}}/sandbox/financial-institutions/{{xs2a-sandbox-financial-institution-id}}/financial-institution-users/{{xs2a-sandbox-financial-institution-userid}}/financial-institution-accounts",
+											"protocol": "https",
+											"host": [
+												"{{ibanity-hostname}}"
+											],
+											"path": [
+												"sandbox",
+												"financial-institutions",
+												"{{xs2a-sandbox-financial-institution-id}}",
+												"financial-institution-users",
+												"{{xs2a-sandbox-financial-institution-userid}}",
+												"financial-institution-accounts"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "2.3.2. Sandbox Transactions",
+							"item": [
+								{
+									"name": "SB 2.3.2.0: List Sandbox Account Transactions",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"var jsonData = JSON.parse(responseBody);",
+													"pm.environment.set(\"xs2a-sandbox-financial-institution-transaction-id\", jsonData.data[0].id);",
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Digest",
+												"type": "text",
+												"value": "{{digestHeader}}"
+											},
+											{
+												"key": "Signature",
+												"type": "text",
+												"value": "{{signatureHeader}}"
+											}
+										],
+										"url": {
+											"raw": "https://{{ibanity-hostname}}/sandbox/financial-institutions/{{xs2a-financial-institution-id}}/financial-institution-users/{{xs2a-sandbox-financial-institution-userid}}/financial-institution-accounts/{{xs2a-sandbox-account-id}}/financial-institution-transactions",
+											"protocol": "https",
+											"host": [
+												"{{ibanity-hostname}}"
+											],
+											"path": [
+												"sandbox",
+												"financial-institutions",
+												"{{xs2a-financial-institution-id}}",
+												"financial-institution-users",
+												"{{xs2a-sandbox-financial-institution-userid}}",
+												"financial-institution-accounts",
+												"{{xs2a-sandbox-account-id}}",
+												"financial-institution-transactions"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "SB 2.3.2.1: Create Sandbox Account Transaction",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"var jsonData = JSON.parse(responseBody);",
+													"pm.environment.set(\"xs2a-sandbox-financial-institution-transaction-id\", jsonData.data.id);",
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Digest",
+												"type": "text",
+												"value": "{{digestHeader}}"
+											},
+											{
+												"key": "Signature",
+												"type": "text",
+												"value": "{{signatureHeader}}"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"data\":  {\n    \t\"type\": \"financialInstitutionTransaction\",\n\t    \"attributes\": {\n            \"automaticBooking\": true,\n\t        \"amount\": 8.01,\n\t\t\t\"bankTransactionCode\": \"PMTD-RCCD-TTED\",\n\t\t\t\"proprietaryBankTransactionCode\": \"XPAY\",\n\t\t\t\"mandateId\": \"12345R\",\n\t\t\t\"creditorId\": \"AZSDFGDFS\",\n\t        \"counterpartName\": \"Hoeger Ltd\",\n\t        \"counterpartReference\": \"BE06892497220666\",\n\t        \"currency\": \"EUR\",\n\t        \"description\": \"Wire transfert\",\n\t        \"executionDate\": \"2023-03-29T16:51:00Z\",\n\t        \"remittanceInformation\": \"Earum blanditiis inéé.\",\n\t        \"remittanceInformationType\": \"unstructured\",\n\t        \"valueDate\": \"2023-03-29T16:51:00Z\"\n\t    }\n\t}\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "https://{{ibanity-hostname}}/sandbox/financial-institutions/{{xs2a-financial-institution-id}}/financial-institution-users/{{xs2a-sandbox-financial-institution-userid}}/financial-institution-accounts/{{xs2a-sandbox-account-id}}/financial-institution-transactions",
+											"protocol": "https",
+											"host": [
+												"{{ibanity-hostname}}"
+											],
+											"path": [
+												"sandbox",
+												"financial-institutions",
+												"{{xs2a-financial-institution-id}}",
+												"financial-institution-users",
+												"{{xs2a-sandbox-financial-institution-userid}}",
+												"financial-institution-accounts",
+												"{{xs2a-sandbox-account-id}}",
+												"financial-institution-transactions"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "SB 2.3.2.2: Delete Sandbox Account Transaction",
+									"request": {
+										"method": "DELETE",
+										"header": [
+											{
+												"key": "Digest",
+												"type": "text",
+												"value": "{{digestHeader}}"
+											},
+											{
+												"key": "Signature",
+												"type": "text",
+												"value": "{{signatureHeader}}"
+											}
+										],
+										"url": {
+											"raw": "https://{{ibanity-hostname}}/sandbox/financial-institutions/{{xs2a-financial-institution-id}}/financial-institution-users/{{xs2a-sandbox-financial-institution-userid}}/financial-institution-accounts/{{xs2a-sandbox-account-id}}/financial-institution-transactions/{{xs2a-sandbox-financial-institution-transaction-id}}",
+											"protocol": "https",
+											"host": [
+												"{{ibanity-hostname}}"
+											],
+											"path": [
+												"sandbox",
+												"financial-institutions",
+												"{{xs2a-financial-institution-id}}",
+												"financial-institution-users",
+												"{{xs2a-sandbox-financial-institution-userid}}",
+												"financial-institution-accounts",
+												"{{xs2a-sandbox-account-id}}",
+												"financial-institution-transactions",
+												"{{xs2a-sandbox-financial-institution-transaction-id}}"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "SB 2.3.2.3: Update Sandbox Account Transaction Copy",
+									"request": {
+										"method": "PATCH",
+										"header": [
+											{
+												"key": "Digest",
+												"type": "text",
+												"value": "{{digestHeader}}"
+											},
+											{
+												"key": "Signature",
+												"type": "text",
+												"value": "{{signatureHeader}}"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"data\":  {\n    \t\"type\": \"financialInstitutionTransaction\",\n\t    \"attributes\": {\n            \"description\": \"hello\"\n        }\n\t}\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "https://{{ibanity-hostname}}/sandbox/financial-institutions/{{xs2a-financial-institution-id}}/financial-institution-users/{{xs2a-sandbox-financial-institution-userid}}/financial-institution-accounts/{{xs2a-sandbox-account-id}}/financial-institution-transactions/{{xs2a-sandbox-financial-institution-transaction-id}}",
+											"protocol": "https",
+											"host": [
+												"{{ibanity-hostname}}"
+											],
+											"path": [
+												"sandbox",
+												"financial-institutions",
+												"{{xs2a-financial-institution-id}}",
+												"financial-institution-users",
+												"{{xs2a-sandbox-financial-institution-userid}}",
+												"financial-institution-accounts",
+												"{{xs2a-sandbox-account-id}}",
+												"financial-institution-transactions",
+												"{{xs2a-sandbox-financial-institution-transaction-id}}"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						}
+					]
+				}
+			],
+			"auth": {
+				"type": "bearer",
+				"bearer": [
+					{
+						"key": "token",
+						"value": "{{xs2a-customer-access-token}}",
+						"type": "string"
+					}
+				]
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "3. Account Information Access Requests",
+			"item": [
+				{
+					"name": "3.0.0: Create Account Information Access Request",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"pm.environment.set(\"xs2a-account-information-access-request-id\", jsonData.data.id);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Digest",
+								"value": "{{digestHeader}}",
+								"type": "text"
+							},
+							{
+								"key": "Signature",
+								"value": "{{signatureHeader}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"data\": {\n    \"type\": \"accountInformationAccessRequest\",\n    \"attributes\": {\n      \"customerIpAddress\": \"0.0.0.0\",\n      \"redirectUri\": \"https://postman?hello=1\",\n      \"consentReference\": \"6267bc68-e0b8-45f8-a3cd-3d9c4ebe787e\",\n      \"state\": \"36b3a0b6-94c8-498e-9611-bbb041b50fa0\",\n      \"allowFinancialInstitutionRedirectUri\": true,\n      \"allowMulticurrencyAccounts\": true,\n      \"skipIbanityCompletionCallback\": true\n    }\n  }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://{{ibanity-hostname}}/xs2a/customer/financial-institutions/{{xs2a-financial-institution-id}}/account-information-access-requests",
+							"protocol": "https",
+							"host": [
+								"{{ibanity-hostname}}"
+							],
+							"path": [
+								"xs2a",
+								"customer",
+								"financial-institutions",
+								"{{xs2a-financial-institution-id}}",
+								"account-information-access-requests"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "3.0.1: Get Account Information Access Request",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Digest",
+								"value": "{{digestHeader}}",
+								"type": "text"
+							},
+							{
+								"key": "Signature",
+								"value": "{{signatureHeader}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "https://{{ibanity-hostname}}/xs2a/customer/financial-institutions/{{xs2a-financial-institution-id}}/account-information-access-requests/{{xs2a-account-information-access-request-id}}",
+							"protocol": "https",
+							"host": [
+								"{{ibanity-hostname}}"
+							],
+							"path": [
+								"xs2a",
+								"customer",
+								"financial-institutions",
+								"{{xs2a-financial-institution-id}}",
+								"account-information-access-requests",
+								"{{xs2a-account-information-access-request-id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "3.1.0: Create Account Information Access Request Authorization",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Digest",
+								"value": "{{digestHeader}}",
+								"type": "text"
+							},
+							{
+								"key": "Signature",
+								"value": "{{signatureHeader}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"data\": {\n    \"type\": \"authorization\",\n    \"attributes\": {\n      \"queryParameters\": {\n        \"code\": \"SFMyNTY.g2gDdAAAAAVkACVhY2NvdW50X2luZm9ybWF0aW9uX2FjY2Vzc19yZXF1ZXN0X2lkbQAAACQzMDQyZDRjNy03ZTIzLTQ2YWEtYmIyMy1hNjQzZDdlMzc1OGRkAA5hcHBsaWNhdGlvbl9pZG0AAAAkOTlkZmNjNTItOTJhZC00ZjIyLWEwODctZWUwZjkzOGYyY2UxZAAIYXVkaWVuY2VtAAAANWFjY291bnRfaW5mb3JtYXRpb25fYWNjZXNzX3JlcXVlc3RfYXV0aG9yaXphdGlvbl9jb2RlZAAYZmluYW5jaWFsX2luc3RpdHV0aW9uX2lkbQAAACQ4NjJjOTk0Ni0zZmUwLTQ5YTAtYmU2Ni0yM2VjMjBhMTI3Y2RkAAJpZG0AAAAkNDgyODk1NmMtNGU4Yy00ZDBjLTgyOWEtMmYzOGZmNGU1ZjA5bgYAU_5nlogBYgABUYA.Rkb0d7XKOPT5-Xl605XIhUQdj12nBzQJBBDUqS2lTEY\",\n        \"state\": \"36b3a0b6-94c8-498e-9611-bbb041b50fa0\"\n      }\n    }\n  }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://{{ibanity-hostname}}/xs2a/customer/financial-institutions/{{xs2a-financial-institution-id}}/account-information-access-requests/{{xs2a-account-information-access-request-id}}/authorizations",
+							"protocol": "https",
+							"host": [
+								"{{ibanity-hostname}}"
+							],
+							"path": [
+								"xs2a",
+								"customer",
+								"financial-institutions",
+								"{{xs2a-financial-institution-id}}",
+								"account-information-access-requests",
+								"{{xs2a-account-information-access-request-id}}",
+								"authorizations"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "3.2.0: List Account Information Access Request Initial Synchronizations",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"pm.environment.set(\"xs2a-synchronization-id\", jsonData.data[0].id);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Digest",
+								"type": "text",
+								"value": "{{digestHeader}}"
+							},
+							{
+								"key": "Signature",
+								"type": "text",
+								"value": "{{signatureHeader}}"
+							}
+						],
+						"url": {
+							"raw": "https://{{ibanity-hostname}}/xs2a/customer/financial-institutions/{{xs2a-financial-institution-id}}/account-information-access-requests/{{xs2a-account-information-access-request-id}}/initial-account-transactions-synchronizations",
+							"protocol": "https",
+							"host": [
+								"{{ibanity-hostname}}"
+							],
+							"path": [
+								"xs2a",
+								"customer",
+								"financial-institutions",
+								"{{xs2a-financial-institution-id}}",
+								"account-information-access-requests",
+								"{{xs2a-account-information-access-request-id}}",
+								"initial-account-transactions-synchronizations"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "4. Accounts & Transactions",
+			"item": [
+				{
+					"name": "4.1. Accounts",
+					"item": [
+						{
+							"name": "4.1.0: List Accounts (cross Financial Institutions)",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var jsonData = JSON.parse(responseBody);",
+											"pm.environment.set(\"xs2a-account-id\", jsonData.data[0].id);"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Digest",
+										"value": "{{digestHeader}}",
+										"type": "text"
+									},
+									{
+										"key": "Signature",
+										"value": "{{signatureHeader}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "https://{{ibanity-hostname}}/xs2a/customer/accounts",
+									"protocol": "https",
+									"host": [
+										"{{ibanity-hostname}}"
+									],
+									"path": [
+										"xs2a",
+										"customer",
+										"accounts"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "4.1.1: List Accounts",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var jsonData = JSON.parse(responseBody);",
+											"pm.environment.set(\"xs2a-account-id\", jsonData.data[0].id);"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Digest",
+										"value": "{{digestHeader}}",
+										"type": "text"
+									},
+									{
+										"key": "Signature",
+										"value": "{{signatureHeader}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "https://{{ibanity-hostname}}/xs2a/customer/financial-institutions/{{xs2a-financial-institution-id}}/accounts",
+									"protocol": "https",
+									"host": [
+										"{{ibanity-hostname}}"
+									],
+									"path": [
+										"xs2a",
+										"customer",
+										"financial-institutions",
+										"{{xs2a-financial-institution-id}}",
+										"accounts"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "4.1.2: Get Account",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Digest",
+										"type": "text",
+										"value": "{{digestHeader}}"
+									},
+									{
+										"key": "Signature",
+										"type": "text",
+										"value": "{{signatureHeader}}"
+									}
+								],
+								"url": {
+									"raw": "https://{{ibanity-hostname}}/xs2a/customer/financial-institutions/{{xs2a-financial-institution-id}}/accounts/{{xs2a-account-id}}",
+									"protocol": "https",
+									"host": [
+										"{{ibanity-hostname}}"
+									],
+									"path": [
+										"xs2a",
+										"customer",
+										"financial-institutions",
+										"{{xs2a-financial-institution-id}}",
+										"accounts",
+										"{{xs2a-account-id}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "4.1.3: Delete Account",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Digest",
+										"type": "text",
+										"value": "{{digestHeader}}"
+									},
+									{
+										"key": "Signature",
+										"type": "text",
+										"value": "{{signatureHeader}}"
+									}
+								],
+								"url": {
+									"raw": "https://{{ibanity-hostname}}/xs2a/customer/financial-institutions/{{xs2a-financial-institution-id}}/accounts/{{xs2a-account-id}}",
+									"protocol": "https",
+									"host": [
+										"{{ibanity-hostname}}"
+									],
+									"path": [
+										"xs2a",
+										"customer",
+										"financial-institutions",
+										"{{xs2a-financial-institution-id}}",
+										"accounts",
+										"{{xs2a-account-id}}"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "4.2. Transactions",
+					"item": [
+						{
+							"name": "4.2.1.0: List Transactions",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var jsonData = JSON.parse(responseBody);",
+											"pm.environment.set(\"xs2a-transaction-id\", jsonData.data[0].id);"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Digest",
+										"type": "text",
+										"value": "{{digestHeader}}"
+									},
+									{
+										"key": "Signature",
+										"type": "text",
+										"value": "{{signatureHeader}}"
+									}
+								],
+								"url": {
+									"raw": "https://{{ibanity-hostname}}/xs2a/customer/financial-institutions/{{xs2a-financial-institution-id}}/accounts/{{xs2a-account-id}}/transactions?limit=100",
+									"protocol": "https",
+									"host": [
+										"{{ibanity-hostname}}"
+									],
+									"path": [
+										"xs2a",
+										"customer",
+										"financial-institutions",
+										"{{xs2a-financial-institution-id}}",
+										"accounts",
+										"{{xs2a-account-id}}",
+										"transactions"
+									],
+									"query": [
+										{
+											"key": "limit",
+											"value": "100"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "4.2.2.0: Get Transaction",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Digest",
+										"type": "text",
+										"value": "{{digestHeader}}"
+									},
+									{
+										"key": "Signature",
+										"type": "text",
+										"value": "{{signatureHeader}}"
+									}
+								],
+								"url": {
+									"raw": "https://{{ibanity-hostname}}/xs2a/customer/financial-institutions/{{xs2a-financial-institution-id}}/accounts/{{xs2a-account-id}}/transactions/{{xs2a-transaction-id}}",
+									"protocol": "https",
+									"host": [
+										"{{ibanity-hostname}}"
+									],
+									"path": [
+										"xs2a",
+										"customer",
+										"financial-institutions",
+										"{{xs2a-financial-institution-id}}",
+										"accounts",
+										"{{xs2a-account-id}}",
+										"transactions",
+										"{{xs2a-transaction-id}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "4.2.3.0: List Updated Transactions for Synchronization",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Digest",
+										"type": "text",
+										"value": "{{digestHeader}}"
+									},
+									{
+										"key": "Signature",
+										"type": "text",
+										"value": "{{signatureHeader}}"
+									}
+								],
+								"url": {
+									"raw": "https://{{ibanity-hostname}}/xs2a/customer/synchronizations/{{xs2a-synchronization-id}}/updated-transactions",
+									"protocol": "https",
+									"host": [
+										"{{ibanity-hostname}}"
+									],
+									"path": [
+										"xs2a",
+										"customer",
+										"synchronizations",
+										"{{xs2a-synchronization-id}}",
+										"updated-transactions"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "4.3. Pending Transactions",
+					"item": [
+						{
+							"name": "4.3.1.0: List Pending Transactions",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var jsonData = JSON.parse(responseBody);",
+											"if (jsonData.data.length > 0) {",
+											"    pm.environment.set(\"xs2a-pending-transaction-id\", jsonData.data[0].id);",
+											"}"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Digest",
+										"type": "text",
+										"value": "{{digestHeader}}"
+									},
+									{
+										"key": "Signature",
+										"type": "text",
+										"value": "{{signatureHeader}}"
+									}
+								],
+								"url": {
+									"raw": "https://{{ibanity-hostname}}/xs2a/customer/financial-institutions/{{xs2a-financial-institution-id}}/accounts/{{xs2a-account-id}}/pending-transactions?limit=100",
+									"protocol": "https",
+									"host": [
+										"{{ibanity-hostname}}"
+									],
+									"path": [
+										"xs2a",
+										"customer",
+										"financial-institutions",
+										"{{xs2a-financial-institution-id}}",
+										"accounts",
+										"{{xs2a-account-id}}",
+										"pending-transactions"
+									],
+									"query": [
+										{
+											"key": "limit",
+											"value": "100"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "4.3.2.0: Get Pending Transaction",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Digest",
+										"type": "text",
+										"value": "{{digestHeader}}"
+									},
+									{
+										"key": "Signature",
+										"type": "text",
+										"value": "{{signatureHeader}}"
+									}
+								],
+								"url": {
+									"raw": "https://{{ibanity-hostname}}/xs2a/customer/financial-institutions/{{xs2a-financial-institution-id}}/accounts/{{xs2a-account-id}}/pending-transactions/{{xs2a-pending-transaction-id}}",
+									"protocol": "https",
+									"host": [
+										"{{ibanity-hostname}}"
+									],
+									"path": [
+										"xs2a",
+										"customer",
+										"financial-institutions",
+										"{{xs2a-financial-institution-id}}",
+										"accounts",
+										"{{xs2a-account-id}}",
+										"pending-transactions",
+										"{{xs2a-pending-transaction-id}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "4.3.3.0: List Updated Pending Transactions for Synchronization",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Digest",
+										"type": "text",
+										"value": "{{digestHeader}}"
+									},
+									{
+										"key": "Signature",
+										"type": "text",
+										"value": "{{signatureHeader}}"
+									}
+								],
+								"url": {
+									"raw": "https://{{ibanity-hostname}}/xs2a/customer/synchronizations/{{xs2a-synchronization-id}}/updated-pending-transactions",
+									"protocol": "https",
+									"host": [
+										"{{ibanity-hostname}}"
+									],
+									"path": [
+										"xs2a",
+										"customer",
+										"synchronizations",
+										"{{xs2a-synchronization-id}}",
+										"updated-pending-transactions"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "4.4. Synchronizations",
+					"item": [
+						{
+							"name": "4.4.1.0: Create Synchronization",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var jsonData = JSON.parse(responseBody);",
+											"",
+											"if (jsonData && jsonData.data){",
+											"    pm.environment.set(\"xs2a-synchronization-id\", jsonData.data.id);",
+											"}"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Digest",
+										"type": "text",
+										"value": "{{digestHeader}}"
+									},
+									{
+										"key": "Signature",
+										"type": "text",
+										"value": "{{signatureHeader}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"data\": {\n    \"type\": \"synchronization\",\n    \"attributes\": {\n      \"resourceType\": \"account\",\n      \"resourceId\": \"{{xs2a-account-id}}\",\n      \"subtype\": \"accountTransactions\",\n      \"customerOnline\": true,\n      \"customerIpAddress\": \"200.210.13.122\"\n    }\n  }\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://{{ibanity-hostname}}/xs2a/customer/synchronizations",
+									"protocol": "https",
+									"host": [
+										"{{ibanity-hostname}}"
+									],
+									"path": [
+										"xs2a",
+										"customer",
+										"synchronizations"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "4.4.1.1: Get Synchronization",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Digest",
+										"type": "text",
+										"value": "{{digestHeader}}"
+									},
+									{
+										"key": "Signature",
+										"type": "text",
+										"value": "{{signatureHeader}}"
+									}
+								],
+								"url": {
+									"raw": "https://{{ibanity-hostname}}/xs2a/customer/synchronizations/{{xs2a-synchronization-id}}",
+									"protocol": "https",
+									"host": [
+										"{{ibanity-hostname}}"
+									],
+									"path": [
+										"xs2a",
+										"customer",
+										"synchronizations",
+										"{{xs2a-synchronization-id}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "4.4.2.0: Create Batch Synchronization",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var jsonData = JSON.parse(responseBody);",
+											"pm.environment.set(\"xs2a-batch-synchronization-id\", jsonData.data.id);",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Digest",
+										"type": "text",
+										"value": "{{digestHeader}}"
+									},
+									{
+										"key": "Signature",
+										"type": "text",
+										"value": "{{signatureHeader}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"data\": {\n    \"type\": \"batch-synchronization\",\n    \"attributes\": {\n      \"resourceType\": \"account\",\n      \"subtypes\": [\"accountDetails\", \"accountTransactions\"]\n    }\n  }\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://{{ibanity-hostname}}/xs2a/batch-synchronizations",
+									"protocol": "https",
+									"host": [
+										"{{ibanity-hostname}}"
+									],
+									"path": [
+										"xs2a",
+										"batch-synchronizations"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			],
+			"auth": {
+				"type": "bearer",
+				"bearer": [
+					{
+						"key": "token",
+						"value": "{{xs2a-customer-access-token}}",
+						"type": "string"
+					}
+				]
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "5. Payment Initiations",
+			"item": [
+				{
+					"name": "1. Single Payment Initiation Requests",
+					"item": [
+						{
+							"name": "5.1.1.0: Create Payment Initiation Request",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var jsonData = JSON.parse(responseBody);",
+											"pm.environment.set(\"xs2a-payment-initiation-request-id\", jsonData.data.id);",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Digest",
+										"type": "text",
+										"value": "{{digestHeader}}"
+									},
+									{
+										"key": "Signature",
+										"type": "text",
+										"value": "{{signatureHeader}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"data\": {\n    \"type\": \"periodicPaymentInitiationRequest\",\n    \"attributes\": {\n      \"redirectUri\": \"https://postman:8282/payment-initiation-request-confirmations\",\n      \"consentReference\": \"3ed04bc7-e76e-4360-8976-df86ea872785\",\n      \"productType\": \"sepaCreditTransfer\",\n      \"remittanceInformation\": \"ee\",\n      \"remittanceInformationType\": \"unstructured\",\n      \"currency\": \"EUR\",\n      \"amount\": 12,\n      \"debtorName\": \"Randall Johnson\",\n      \"debtorAccountReference\": \"ES8401826450000201500191\",\n      \"debtorAccountReferenceType\": \"IBAN\",\n      \"creditorName\": \"Chris\",\n      \"creditorAccountReference\": \"BE88732053077441\",\n      \"creditorAccountReferenceType\": \"IBAN\",\n      \"creditorAgent\": \"NBBEBEBB203\",\n      \"creditorAgentType\": \"BIC\",\n      \"endToEndId\": \"83d4c48a758c-4ba0-94e9e4f969921dda\",\n      \"customerIpAddress\": \"1.2.3.4\",\n      \"skipIbanityCompletionCallback\": false,\n      \"allowFinancialInstitutionRedirectUri\": true,\n      \"state\": \"36b3a0b6-94c8-498e-9611-bbb041b50fa0\"\n    }\n  }\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://{{ibanity-hostname}}/xs2a/customer/financial-institutions/{{xs2a-financial-institution-id}}/payment-initiation-requests",
+									"protocol": "https",
+									"host": [
+										"{{ibanity-hostname}}"
+									],
+									"path": [
+										"xs2a",
+										"customer",
+										"financial-institutions",
+										"{{xs2a-financial-institution-id}}",
+										"payment-initiation-requests"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "5.1.1.1: Get Payment Initiation Request",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Digest",
+										"value": "{{digestHeader}}",
+										"type": "text"
+									},
+									{
+										"key": "Signature",
+										"value": "{{signatureHeader}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "https://{{ibanity-hostname}}/xs2a/customer/financial-institutions/{{xs2a-financial-institution-id}}/payment-initiation-requests/{{xs2a-payment-initiation-request-id}}",
+									"protocol": "https",
+									"host": [
+										"{{ibanity-hostname}}"
+									],
+									"path": [
+										"xs2a",
+										"customer",
+										"financial-institutions",
+										"{{xs2a-financial-institution-id}}",
+										"payment-initiation-requests",
+										"{{xs2a-payment-initiation-request-id}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "5.1.1.2: Delete Payment Initiation Request",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Digest",
+										"value": "{{digestHeader}}",
+										"type": "text"
+									},
+									{
+										"key": "Signature",
+										"value": "{{signatureHeader}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "https://{{ibanity-hostname}}/xs2a/customer/financial-institutions/{{xs2a-financial-institution-id}}/payment-initiation-requests/{{xs2a-payment-initiation-request-id}}",
+									"protocol": "https",
+									"host": [
+										"{{ibanity-hostname}}"
+									],
+									"path": [
+										"xs2a",
+										"customer",
+										"financial-institutions",
+										"{{xs2a-financial-institution-id}}",
+										"payment-initiation-requests",
+										"{{xs2a-payment-initiation-request-id}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "5.1.2.0: Create Payment Initiation Request Authorization",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Digest",
+										"type": "text",
+										"value": "{{digestHeader}}"
+									},
+									{
+										"key": "Signature",
+										"type": "text",
+										"value": "{{signatureHeader}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"data\": {\n    \"type\": \"authorization\",\n    \"attributes\": {\n    \t\"queryParameters\": {\n\t        \"code\": \"ee31ef50-752d-11eb-9202-5d37bb575934\",\n            \"state\": \"36b3a0b6-94c8-498e-9611-bbb041b50fa0\"\n    \t}\n    }\n  }\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://{{ibanity-hostname}}/xs2a/customer/financial-institutions/{{xs2a-financial-institution-id}}/payment-initiation-requests/{{xs2a-payment-initiation-request-id}}/authorizations",
+									"protocol": "https",
+									"host": [
+										"{{ibanity-hostname}}"
+									],
+									"path": [
+										"xs2a",
+										"customer",
+										"financial-institutions",
+										"{{xs2a-financial-institution-id}}",
+										"payment-initiation-requests",
+										"{{xs2a-payment-initiation-request-id}}",
+										"authorizations"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "2. Periodic Payment Initiation Requests",
+					"item": [
+						{
+							"name": "5.2.1.0: Create Periodic Payment Initiation Request",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var jsonData = JSON.parse(responseBody);",
+											"pm.environment.set(\"periodic-payment-initiation-request-id\", jsonData.data.id);"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Digest",
+										"value": "{{digestHeader}}",
+										"type": "text"
+									},
+									{
+										"key": "Signature",
+										"value": "{{signatureHeader}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"data\": {\n    \"type\": \"periodicPaymentInitiationRequest\",\n    \"attributes\": {\n      \"redirectUri\": \"https://postman:8282/payment-initiation-request-confirmations\",\n      \"consentReference\": \"3ed04bc7-e76e-4360-8976-df86ea872785\",\n      \"productType\": \"sepaCreditTransfer\",\n      \"remittanceInformation\": \"ee\",\n      \"remittanceInformationType\": \"unstructured\",\n      \"currency\": \"EUR\",\n      \"amount\": 12,\n      \"debtorName\": \"Randall Johnson\",\n      \"debtorAccountReference\": \"BE60736045930170\",\n      \"debtorAccountReferenceType\": \"IBAN\",\n      \"creditorName\": \"Chris\",\n      \"creditorAccountReference\": \"BE88732053077441\",\n      \"creditorAccountReferenceType\": \"IBAN\",\n      \"creditorAgent\": \"NBBEBEBB203\",\n      \"creditorAgentType\": \"BIC\",\n      \"endToEndId\": \"83d4c48a758c-4ba0-94e9e4f969921dda\",\n      \"startDate\": \"2021-04-10\",\n      \"executionRule\": \"following\",\n      \"frequency\": \"weekly\",\n      \"customerIpAddress\": \"1.2.3.4\",\n      \"skipIbanityCompletionCallback\": false,\n      \"allowFinancialInstitutionRedirectUri\": true,\n      \"state\": \"36b3a0b6-94c8-498e-9611-bbb041b50fa0\"\n    }\n  }\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://{{ibanity-hostname}}/xs2a/customer/financial-institutions/{{financial-institution-uuid}}/periodic-payment-initiation-requests",
+									"protocol": "https",
+									"host": [
+										"{{ibanity-hostname}}"
+									],
+									"path": [
+										"xs2a",
+										"customer",
+										"financial-institutions",
+										"{{financial-institution-uuid}}",
+										"periodic-payment-initiation-requests"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "5.2.1.1: Get Periodic Payment Initiation Request",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Digest",
+										"value": "{{digestHeader}}",
+										"type": "text"
+									},
+									{
+										"key": "Signature",
+										"value": "{{signatureHeader}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "https://{{ibanity-hostname}}/xs2a/customer/financial-institutions/{{xs2a-financial-institution-id}}/periodic-payment-initiation-requests/{{xs2a-periodic-payment-initiation-request-id}}",
+									"protocol": "https",
+									"host": [
+										"{{ibanity-hostname}}"
+									],
+									"path": [
+										"xs2a",
+										"customer",
+										"financial-institutions",
+										"{{xs2a-financial-institution-id}}",
+										"periodic-payment-initiation-requests",
+										"{{xs2a-periodic-payment-initiation-request-id}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "5.2.1.2: Delete Periodic Payment Initiation Request",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Digest",
+										"value": "{{digestHeader}}",
+										"type": "text"
+									},
+									{
+										"key": "Signature",
+										"value": "{{signatureHeader}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "https://{{ibanity-hostname}}/xs2a/customer/financial-institutions/{{xs2a-financial-institution-id}}/periodic-payment-initiation-requests/{{xs2a-periodic-payment-initiation-request-id}}",
+									"protocol": "https",
+									"host": [
+										"{{ibanity-hostname}}"
+									],
+									"path": [
+										"xs2a",
+										"customer",
+										"financial-institutions",
+										"{{xs2a-financial-institution-id}}",
+										"periodic-payment-initiation-requests",
+										"{{xs2a-periodic-payment-initiation-request-id}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "5.2.2.0: Create Periodic Payment Initiation Request Authorization",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Digest",
+										"type": "text",
+										"value": "{{digestHeader}}"
+									},
+									{
+										"key": "Signature",
+										"type": "text",
+										"value": "{{signatureHeader}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"data\": {\n    \"type\": \"authorization\",\n    \"attributes\": {\n    \t\"queryParameters\": {\n\t        \"code\": \"4ec33d5e-7530-11eb-9202-5d37bb575934\",\n    \t    \"state\": \"36b3a0b6-94c8-498e-9611-bbb041b50fa0\"\n    \t}\n    }\n  }\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://{{ibanity-hostname}}/xs2a/customer/financial-institutions/{{xs2a-financial-institution-id}}/periodic-payment-initiation-requests/{{xs2a-periodic-payment-initiation-request-id}}/authorizations",
+									"protocol": "https",
+									"host": [
+										"{{ibanity-hostname}}"
+									],
+									"path": [
+										"xs2a",
+										"customer",
+										"financial-institutions",
+										"{{xs2a-financial-institution-id}}",
+										"periodic-payment-initiation-requests",
+										"{{xs2a-periodic-payment-initiation-request-id}}",
+										"authorizations"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "3. Bulk Payment Initiation Requests",
+					"item": [
+						{
+							"name": "5.3.1.0: Create Bulk Payment Initiation Request",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var jsonData = JSON.parse(responseBody);",
+											"pm.environment.set(\"xs2a-bulk-payment-initiation-request-id\", jsonData.data.id);",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Digest",
+										"value": "{{digestHeader}}",
+										"type": "text"
+									},
+									{
+										"key": "Signature",
+										"value": "{{signatureHeader}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"data\": {\n    \"type\": \"bulkPaymentInitiationRequest\",\n    \"attributes\": {\n      \"redirectUri\": \"https://callback.ibanity.localhost/live/fi/pir/c\",\n      \"consentReference\": \"3ed04bc7-e76e-4360-8976-df86ea872785\",\n      \"productType\": \"sepaCreditTransfer\",\n      \"batchBookingPreferred\": true,\n      \"debtorAccountReference\": \"BE84561558303559\",\n      \"debtorAccountReferenceType\": \"IBAN\",\n      \"payments\": [{\n        \"endToEndId\": \"83d4c48a758c4ba094e9e4f96992dd\",\n      \t\"creditorName\": \"Chris\",\n      \t\"creditorAccountReference\": \"BE48798358541527\",\n      \t\"creditorAccountReferenceType\": \"IBAN\",\n        \"creditorAgent\": \"BARCGB21\",\n        \"creditorAgentType\": \"BIC\",\n      \t\"amount\": 0.01,\n      \t\"currency\": \"EUR\",\n      \t\"remittanceInformationType\": \"unstructured\",\n      \t\"remittanceInformation\": \"+++123/1231/12328+++\"\n      },{\n        \"endToEndId\": \"83d4c48a758c-4dddadddd\",\n      \t\"creditorName\": \"HCOu\",\n      \t\"creditorAccountReference\": \"BE48798358541527\",\n      \t\"creditorAccountReferenceType\": \"IBAN\",\n        \"creditorAgent\": \"BARCGB21\",\n        \"creditorAgentType\": \"BIC\",\n      \t\"amount\": 0.01,\n      \t\"currency\": \"EUR\",\n      \t\"remittanceInformationType\": \"unstructured\",\n      \t\"remittanceInformation\": \"Bulk PI 2\"\n      }],\n      \"customerIpAddress\": \"1.2.3.4\",\n      \"skipIbanityCompletionCallback\": false,\n      \"allowFinancialInstitutionRedirectUri\": true,\n      \"state\": \"36b3a0b6-94c8-498e-9611-bbb041b50fa0\"\n    }\n  }\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://{{ibanity-hostname}}/xs2a/customer/financial-institutions/{{xs2a-financial-institution-id}}/bulk-payment-initiation-requests",
+									"protocol": "https",
+									"host": [
+										"{{ibanity-hostname}}"
+									],
+									"path": [
+										"xs2a",
+										"customer",
+										"financial-institutions",
+										"{{xs2a-financial-institution-id}}",
+										"bulk-payment-initiation-requests"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "5.3.1.1: Get Bulk Payment Initiation Request",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Digest",
+										"value": "{{digestHeader}}",
+										"type": "text"
+									},
+									{
+										"key": "Signature",
+										"value": "{{signatureHeader}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "https://{{ibanity-hostname}}/xs2a/customer/financial-institutions/{{xs2a-financial-institution-id}}/bulk-payment-initiation-requests/{{xs2a-bulk-payment-initiation-request-id}}",
+									"protocol": "https",
+									"host": [
+										"{{ibanity-hostname}}"
+									],
+									"path": [
+										"xs2a",
+										"customer",
+										"financial-institutions",
+										"{{xs2a-financial-institution-id}}",
+										"bulk-payment-initiation-requests",
+										"{{xs2a-bulk-payment-initiation-request-id}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "5.3.1.2: Delete Bulk Payment Initiation Request",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Digest",
+										"value": "{{digestHeader}}",
+										"type": "text"
+									},
+									{
+										"key": "Signature",
+										"value": "{{signatureHeader}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "https://{{ibanity-hostname}}/xs2a/customer/financial-institutions/{{xs2a-financial-institution-id}}/bulk-payment-initiation-requests/{{xs2a-bulk-payment-initiation-request-id}}",
+									"protocol": "https",
+									"host": [
+										"{{ibanity-hostname}}"
+									],
+									"path": [
+										"xs2a",
+										"customer",
+										"financial-institutions",
+										"{{xs2a-financial-institution-id}}",
+										"bulk-payment-initiation-requests",
+										"{{xs2a-bulk-payment-initiation-request-id}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "5.3.2.0: Create Bulk Payment Initiation Request Authorization",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Digest",
+										"type": "text",
+										"value": "{{digestHeader}}"
+									},
+									{
+										"key": "Signature",
+										"type": "text",
+										"value": "{{signatureHeader}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"data\": {\n    \"type\": \"authorization\",\n    \"attributes\": {\n    \t\"queryParameters\": {\n    \t    \"code\": \"CrA0cIfAeSZPCjYJhkn5CvVA6Yq7lRFt\",\n            \"state\": \"Paymentreference123\"\n    \t}\n    }\n  }\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://{{ibanity-hostname}}/xs2a/customer/financial-institutions/{{xs2a-financial-institution-id}}/bulk-payment-initiation-requests/{{xs2a-bulk-payment-initiation-request-id}}/authorizations",
+									"protocol": "https",
+									"host": [
+										"{{ibanity-hostname}}"
+									],
+									"path": [
+										"xs2a",
+										"customer",
+										"financial-institutions",
+										"{{xs2a-financial-institution-id}}",
+										"bulk-payment-initiation-requests",
+										"{{xs2a-bulk-payment-initiation-request-id}}",
+										"authorizations"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{xs2a-customer-access-token}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"var url = require(\"url\");",
+					"if (!pm.globals.has(\"forgeJS\")) {",
+					"    console.log(\"Downloading forgejs\")",
+					"    pm.sendRequest(\"https://raw.githubusercontent.com/loveiset/RSAForPostman/master/forge.js\", function (err, res) {",
+					"        if (err) {",
+					"            console.log(\"an error occured\");",
+					"            console.log(err);",
+					"        }",
+					"        else {",
+					"            console.log(\"Setting forge JS\")",
+					"            pm.globals.set(\"forgeJS\", res.text());",
+					"            //console.log(pm.globals.get(\"forgeJS\"));",
+					"            eval(pm.globals.get(\"forgeJS\"));",
+					"            run();",
+					"        }",
+					"    });",
+					"}",
+					"else {",
+					"    eval(pm.globals.get(\"forgeJS\"));",
+					"    run();",
+					"}",
+					"function base64UrlEncode(raw) {",
+					"    return btoa(raw);",
+					"}",
+					"function replacePostmanVariables(value) {",
+					"    return value.replace(/\\{\\{[^\\{]+\\}\\}/g, function (variableTemplate) {",
+					"        let variableName = variableTemplate.replace(\"{{\", \"\").replace(\"}}\", \"\");",
+					"        return pm.variables.get(variableName);",
+					"    });",
+					"}",
+					"function buildDateHeader() {",
+					"    let now = new Date();",
+					"    return now.toISOString();",
+					"}",
+					"function buildHostHeader() {",
+					"    return pm.request.url.host.join(\".\");",
+					"}",
+					"function buildDigestHeader() {",
+					"    let rawBody;",
+					"    if (!!pm.request.body) {",
+					"        rawBody = pm.request.body.raw || \"\";",
+					"    } else {",
+					"        rawBody = \"\";",
+					"    }",
+					"    let instantiatedBody = replacePostmanVariables(rawBody);",
+					"    let messageDigest = forge.md.sha512.create();",
+					"    messageDigest.update(instantiatedBody);",
+					"    return \"SHA-512=\" + base64UrlEncode(messageDigest.digest().data);",
+					"}",
+					"function buildRequestQueryParams() {",
+					"    var returnValue = \"\";",
+					"    pm.request.url.query.members.forEach(function (i) {",
+					"        returnValue += i.key + \"=\" + i.value + \"&\"",
+					"    });",
+					"    if (returnValue.endsWith(\"&\")) {",
+					"        returnValue = returnValue.substring(0, returnValue.length - 1);",
+					"    }",
+					"    if (returnValue.length > 0) {",
+					"        return \"?\" + returnValue;",
+					"    } else {",
+					"        return \"\";",
+					"    }",
+					"}",
+					"function buildRequestTargetHeader() {",
+					"    let httpMethod = pm.request.method.toLowerCase();",
+					"    let requestPath = pm.request.url.path.join(\"/\");",
+					"    let query = buildRequestQueryParams();",
+					"    return `${httpMethod} /${requestPath}${query}`;",
+					"}",
+					"function addOptionalSignedHeaders(headers) {",
+					"    pm.request.headers.members.forEach(function (headerObject) {",
+					"        let headerName = headerObject.key.toLowerCase();",
+					"        if (headerName == \"authorization\" || headerName.match(/^ibanity-.+/) && headerObject.disabled !== true) {",
+					"            headers[headerName] = headerObject.value;",
+					"        }",
+					"    });",
+					"}",
+					"function buildSigningString(headers) {",
+					"    let rawSigningString = Object.keys(headers).map(function (headerName) {",
+					"        return `${headerName}: ${headers[headerName]}`;",
+					"    }).join(\"\\n\");",
+					"    return replacePostmanVariables(rawSigningString);",
+					"}",
+					"function buildSignedHeaderList(headers) {",
+					"    return Object.keys(headers).join(\" \");",
+					"}",
+					"function loadPrivateKey(privateKeyPem, privateKeyPassphrase) {",
+					"    return forge.pki.decryptRsaPrivateKey(privateKeyPem, privateKeyPassphrase);",
+					"}",
+					"function buildEncodedSignature(privateKey, signingString) {",
+					"    let messageDigest = forge.md.sha256.create();",
+					"    messageDigest.update(signingString, \"utf8\");",
+					"    let pss = forge.pss.create({",
+					"      md: forge.md.sha256.create(),",
+					"      mgf: forge.mgf.mgf1.create(forge.md.sha256.create()),",
+					"      saltLength: 32",
+					"    });",
+					"    let signature  = privateKey.sign(messageDigest, pss);",
+					"    return base64UrlEncode(signature)",
+					"}",
+					"function buildSignatureHeader(keyId, algorithm, signedHeaders, encodedSignature, created) {",
+					"    return `keyId=\"${keyId}\",created=\"${created}\",algorithm=\"${algorithm}\",headers=\"${signedHeaders}\",signature=\"${encodedSignature}\"`;",
+					"}",
+					"function run() {",
+					"    let created = Date.now() / 1000 | 0",
+					"    let keyId = pm.variables.get(\"signatureKeyId\");",
+					"    let privateKeyPem = pm.variables.get(\"signatureKey\");",
+					"    let privateKeyPassphrase = pm.variables.get(\"signatureKeyPassphrase\");",
+					"    let headers = {",
+					"        \"(request-target)\": buildRequestTargetHeader(),",
+					"        \"host\": buildHostHeader(),",
+					"        \"digest\": buildDigestHeader(),",
+					"        \"(created)\": created",
+					"    };",
+					"    addOptionalSignedHeaders(headers);",
+					"    let signingString = buildSigningString(headers);",
+					"    let algorithm = \"hs2019\";",
+					"    let signedHeaders = buildSignedHeaderList(headers);",
+					"    let privateKey = loadPrivateKey(privateKeyPem, privateKeyPassphrase);",
+					"    let encodedSignature = buildEncodedSignature(privateKey, signingString);",
+					"    let signatureHeader = buildSignatureHeader(keyId, algorithm, signedHeaders, encodedSignature, created);",
+					"    pm.variables.set(\"digestHeader\", headers.digest);",
+					"    pm.variables.set(\"signatureHeader\", signatureHeader);",
+					"}"
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}

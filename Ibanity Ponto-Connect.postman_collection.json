@@ -1,0 +1,1775 @@
+{
+	"info": {
+		"_postman_id": "aaf49ac8-be44-43f6-9631-48e8010bad49",
+		"name": "Ibanity Ponto-Connect",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "0. Root",
+			"item": [
+				{
+					"name": "0.1: API Root",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://{{ibanity-hostname}}/ponto-connect",
+							"protocol": "https",
+							"host": [
+								"{{ibanity-hostname}}"
+							],
+							"path": [
+								"ponto-connect"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "0.2: Public List Financial Institutions",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"pm.environment.set(\"ponto-connect-financial-institution-id\", jsonData.data[0].id);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {}
+					},
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://{{ibanity-hostname}}/ponto-connect/financial-institutions",
+							"protocol": "https",
+							"host": [
+								"{{ibanity-hostname}}"
+							],
+							"path": [
+								"ponto-connect",
+								"financial-institutions"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "1. Partner",
+			"item": [
+				{
+					"name": "1.1: Create Client (partner) Access Token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"pm.test(\"Answer is valid\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.token_type).to.eql('bearer');",
+									"});",
+									"var jsonData = JSON.parse(responseBody);",
+									"pm.environment.set(\"ponto-connect-client-access-token\", jsonData.access_token);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{ponto-connect-client-secret}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{ponto-connect-client-id}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "grant_type",
+									"value": "client_credentials",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "https://{{ibanity-hostname}}/ponto-connect/oauth2/token",
+							"protocol": "https",
+							"host": [
+								"{{ibanity-hostname}}"
+							],
+							"path": [
+								"ponto-connect",
+								"oauth2",
+								"token"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "1.2: Delete integration",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{ponto-connect-client-access-token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "https://{{ibanity-hostname}}/ponto-connect/organizations/{{ponto-connect-organization-id}}/integration",
+							"protocol": "https",
+							"host": [
+								"{{ibanity-hostname}}"
+							],
+							"path": [
+								"ponto-connect",
+								"organizations",
+								"{{ponto-connect-organization-id}}",
+								"integration"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "1.3: Get Organization Usage",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{ponto-connect-client-access-token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://{{ibanity-hostname}}/ponto-connect/organizations/{{ponto-connect-organization-id}}/usage/2023-04",
+							"protocol": "https",
+							"host": [
+								"{{ibanity-hostname}}"
+							],
+							"path": [
+								"ponto-connect",
+								"organizations",
+								"{{ponto-connect-organization-id}}",
+								"usage",
+								"2023-04"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "2. Organisation",
+			"item": [
+				{
+					"name": "2.1. Onboarding",
+					"item": [
+						{
+							"name": "2.1.1: Onboarding Details",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var jsonData = JSON.parse(responseBody);",
+											"pm.environment.set(\"ponto-connect-onboarding-details-id\", jsonData.data.id);",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{ponto-connect-client-access-token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"data\": {\n    \"type\": \"onboarding-details\",\n    \"attributes\": {\n      \"email\": \"christophe@ibanity.com\",\n      \"firstName\": \"Dev\",\n      \"lastName\": \"Ibanity\",\n      \"organizationName\": \"Acme corp.\",\n      \"addressStreetAddress\": \"Turingstreet 1\",\n      \"addressPostalCode\": \"1000\",\n      \"addressCountry\": \"BE\",\n      \"addressCity\": \"Brussels\",\n      \"phoneNumber\": \"+323456787654\",\n      \"vatNumber\": \"BE0455530509\",\n      \"initialFinancialInstitutionId\": \"{{ponto-connect-financial-institution-id}}\"\n    }\n  }\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://{{ibanity-hostname}}/ponto-connect/onboarding-details",
+									"protocol": "https",
+									"host": [
+										"{{ibanity-hostname}}"
+									],
+									"path": [
+										"ponto-connect",
+										"onboarding-details"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "2.1.2: Start Authorization",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"var uuid = require(\"uuid\");",
+											"pm.environment.set(\"ponto-connect-code-verifier\", uuid.v4() + \"-\" + uuid.v4());",
+											"",
+											"eval(pm.globals.get(\"forgeJS\"));",
+											"let messageDigest = forge.md.sha256.create();",
+											"messageDigest.update(pm.environment.get(\"ponto-connect-code-verifier\"));",
+											"pm.environment.set(\"ponto-connect-code-challenge\", btoa(messageDigest.digest().data).replace(\"/\", \"_\").replace(\"+\", \"-\").replace(\"=\", \"\"));",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "https://{{ponto-authorization-host}}/oauth2/auth?response_type=code&scope=offline_access ai pi&state=faidsojreiqo293jaf9f0asdjf&code_challenge_method=S256&client_id={{ponto-connect-client-id}}&redirect_uri={{ponto-connect-redirect-uri}}&code_challenge={{ponto-connect-code-challenge}}",
+									"protocol": "https",
+									"host": [
+										"{{ponto-authorization-host}}"
+									],
+									"path": [
+										"oauth2",
+										"auth"
+									],
+									"query": [
+										{
+											"key": "response_type",
+											"value": "code"
+										},
+										{
+											"key": "scope",
+											"value": "offline_access ai pi"
+										},
+										{
+											"key": "state",
+											"value": "faidsojreiqo293jaf9f0asdjf"
+										},
+										{
+											"key": "code_challenge_method",
+											"value": "S256"
+										},
+										{
+											"key": "onboarding_details_id",
+											"value": "{{ponto-connect-onboarding-details-id}}",
+											"disabled": true
+										},
+										{
+											"key": "client_id",
+											"value": "{{ponto-connect-client-id}}"
+										},
+										{
+											"key": "redirect_uri",
+											"value": "{{ponto-connect-redirect-uri}}"
+										},
+										{
+											"key": "code_challenge",
+											"value": "{{ponto-connect-code-challenge}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "2.1.3: Create Access Token (Authorization Code Exchange)",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"var jsonData = JSON.parse(responseBody);",
+											"pm.environment.set(\"ponto-connect-access-token\", jsonData.access_token);",
+											"pm.environment.set(\"ponto-connect-refresh-token\", jsonData.refresh_token);",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "basic",
+									"basic": [
+										{
+											"key": "password",
+											"value": "{{ponto-connect-client-secret}}",
+											"type": "string"
+										},
+										{
+											"key": "username",
+											"value": "{{ponto-connect-client-id}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"value": "application/x-www-form-urlencoded",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "urlencoded",
+									"urlencoded": [
+										{
+											"key": "grant_type",
+											"value": "authorization_code",
+											"type": "text"
+										},
+										{
+											"key": "code",
+											"value": "6I8ObPGhBzm3BAwDpillBN2e3fh5uw1tBuJlzl89iWg.P44rwjSvPyza7_w4H8RYCLMgNjPW2B2v7qnLr3PXkqw",
+											"type": "text"
+										},
+										{
+											"key": "redirect_uri",
+											"value": "{{ponto-connect-redirect-uri}}",
+											"type": "text"
+										},
+										{
+											"key": "client_id",
+											"value": "{{ponto-connect-client-id}}",
+											"type": "text"
+										},
+										{
+											"key": "code_verifier",
+											"value": "{{ponto-connect-code-verifier}}",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "https://{{ibanity-hostname}}/ponto-connect/oauth2/token",
+									"protocol": "https",
+									"host": [
+										"{{ibanity-hostname}}"
+									],
+									"path": [
+										"ponto-connect",
+										"oauth2",
+										"token"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "2.1.4: Userinfo",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var jsonData = JSON.parse(responseBody);",
+											"pm.environment.set(\"ponto-connect-organization-id\", jsonData.sub);",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{ponto-connect-access-token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "https://{{ibanity-hostname}}/ponto-connect/userinfo",
+									"protocol": "https",
+									"host": [
+										"{{ibanity-hostname}}"
+									],
+									"path": [
+										"ponto-connect",
+										"userinfo"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "2.1.5: Refresh token",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var jsonData = JSON.parse(responseBody);",
+											"pm.environment.set(\"ponto-connect-access-token\", jsonData.access_token);",
+											"pm.environment.set(\"ponto-connect-refresh-token\", jsonData.refresh_token);",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "basic",
+									"basic": [
+										{
+											"key": "password",
+											"value": "{{ponto-connect-client-secret}}",
+											"type": "string"
+										},
+										{
+											"key": "username",
+											"value": "{{ponto-connect-client-id}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"value": "application/x-www-form-urlencoded",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "urlencoded",
+									"urlencoded": [
+										{
+											"key": "grant_type",
+											"value": "refresh_token",
+											"type": "text"
+										},
+										{
+											"key": "refresh_token",
+											"value": "{{ponto-connect-refresh-token}}",
+											"type": "text"
+										},
+										{
+											"key": "redirect_uri",
+											"value": "{{ponto-connect-redirect-uri}}",
+											"type": "text"
+										},
+										{
+											"key": "client_id",
+											"value": "{{ponto-connect-client-id}}",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "https://{{ibanity-hostname}}/ponto-connect/oauth2/token",
+									"protocol": "https",
+									"host": [
+										"{{ibanity-hostname}}"
+									],
+									"path": [
+										"ponto-connect",
+										"oauth2",
+										"token"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "2.2. Sandbox Data",
+					"item": [
+						{
+							"name": "2.2.1: List Sandbox Accounts",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var jsonData = JSON.parse(responseBody);",
+											"pm.environment.set(\"ponto-connect-financial-institution-account-id\", jsonData.data[0].id);",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{ponto-connect-access-token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "https://{{ibanity-hostname}}/ponto-connect/sandbox/financial-institutions/{{ponto-connect-financial-institution-id}}/financial-institution-accounts",
+									"protocol": "https",
+									"host": [
+										"{{ibanity-hostname}}"
+									],
+									"path": [
+										"ponto-connect",
+										"sandbox",
+										"financial-institutions",
+										"{{ponto-connect-financial-institution-id}}",
+										"financial-institution-accounts"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "2.2.2: Get Sandbox Account",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{ponto-connect-access-token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "https://{{ibanity-hostname}}/ponto-connect/sandbox/financial-institutions/{{ponto-connect-financial-institution-id}}/financial-institution-accounts/{{ponto-connect-financial-institution-account-id}}",
+									"protocol": "https",
+									"host": [
+										"{{ibanity-hostname}}"
+									],
+									"path": [
+										"ponto-connect",
+										"sandbox",
+										"financial-institutions",
+										"{{ponto-connect-financial-institution-id}}",
+										"financial-institution-accounts",
+										"{{ponto-connect-financial-institution-account-id}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "2.2.3: List Sandbox Transactions",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var jsonData = JSON.parse(responseBody);",
+											"pm.environment.set(\"ponto-connect-financial-institution-transaction-id\", jsonData.data[0].id);",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{ponto-connect-access-token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "https://{{ibanity-hostname}}/ponto-connect/sandbox/financial-institutions/{{financial_institution_id}}/financial-institution-accounts/{{ponto-connect-financial-institution-account-id}}/financial-institution-transactions",
+									"protocol": "https",
+									"host": [
+										"{{ibanity-hostname}}"
+									],
+									"path": [
+										"ponto-connect",
+										"sandbox",
+										"financial-institutions",
+										"{{financial_institution_id}}",
+										"financial-institution-accounts",
+										"{{ponto-connect-financial-institution-account-id}}",
+										"financial-institution-transactions"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "2.2.4: Get Sandbox Transaction",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{ponto-connect-access-token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "https://{{ibanity-hostname}}/ponto-connect/sandbox/financial-institutions/{{financial_institution_id}}/financial-institution-accounts/{{ponto-connect-financial-institution-account-id}}/financial-institution-transactions/{{ponto-connect-financial-institution-transaction-id}}",
+									"protocol": "https",
+									"host": [
+										"{{ibanity-hostname}}"
+									],
+									"path": [
+										"ponto-connect",
+										"sandbox",
+										"financial-institutions",
+										"{{financial_institution_id}}",
+										"financial-institution-accounts",
+										"{{ponto-connect-financial-institution-account-id}}",
+										"financial-institution-transactions",
+										"{{ponto-connect-financial-institution-transaction-id}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "2.2.5: Create Sandbox Transaction",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{ponto-connect-access-token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"data\": {\n    \"type\": \"financialInstitutionTransaction\",\n    \"attributes\": {\n      \"valueDate\": \"2020-05-22T00:00:00Z\",\n      \"executionDate\": \"2020-05-25T00:00:00Z\",\n      \"amount\": 84.42,\n      \"currency\": \"EUR\",\n      \"counterpartName\": \"Otro Bank\",\n      \"counterpartReference\": \"BE9786154282554\",\n      \"description\": \"Small Cotton Shoes\",\n      \"remittanceInformation\": \"NEW SHOES\",\n      \"remittanceInformationType\": \"unstructured\"\n    }\n  }\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://{{ibanity-hostname}}/ponto-connect/sandbox/financial-institutions/{{financial_institution_id}}/financial-institution-accounts/{{ponto-connect-financial-institution-account-id}}/financial-institution-transactions",
+									"protocol": "https",
+									"host": [
+										"{{ibanity-hostname}}"
+									],
+									"path": [
+										"ponto-connect",
+										"sandbox",
+										"financial-institutions",
+										"{{financial_institution_id}}",
+										"financial-institution-accounts",
+										"{{ponto-connect-financial-institution-account-id}}",
+										"financial-institution-transactions"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "2.3. Account Information",
+					"item": [
+						{
+							"name": "2.3.1. Financial Institutions",
+							"item": [
+								{
+									"name": "2.31.1: Authorized Financial Institutions for Organization",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"var jsonData = JSON.parse(responseBody);",
+													"pm.environment.set(\"ponto-connect-financial-institution-id\", jsonData.data[0].id);",
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{ponto-connect-access-token}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "https://{{ibanity-hostname}}/ponto-connect/financial-institutions",
+											"protocol": "https",
+											"host": [
+												"{{ibanity-hostname}}"
+											],
+											"path": [
+												"ponto-connect",
+												"financial-institutions"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "2.3.2. Accounts",
+							"item": [
+								{
+									"name": "2.3.2.1: List Accounts",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"var jsonData = JSON.parse(responseBody);",
+													"pm.environment.set(\"ponto-connect-account-id\", jsonData.data[0].id);",
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{ponto-connect-access-token}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "GET",
+										"header": [
+											{
+												"key": "",
+												"value": "",
+												"type": "default"
+											}
+										],
+										"url": {
+											"raw": "https://{{ibanity-hostname}}/ponto-connect/accounts?limit=100",
+											"protocol": "https",
+											"host": [
+												"{{ibanity-hostname}}"
+											],
+											"path": [
+												"ponto-connect",
+												"accounts"
+											],
+											"query": [
+												{
+													"key": "limit",
+													"value": "100"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "2.3.2.2: Get Account",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{ponto-connect-access-token}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "https://{{ibanity-hostname}}/ponto-connect/accounts/{{ponto-connect-account-id}}",
+											"protocol": "https",
+											"host": [
+												"{{ibanity-hostname}}"
+											],
+											"path": [
+												"ponto-connect",
+												"accounts",
+												"{{ponto-connect-account-id}}"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "2.3.3. Transactions",
+							"item": [
+								{
+									"name": "2.3.3.1: List Transactions",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"var jsonData = JSON.parse(responseBody);",
+													"pm.environment.set(\"ponto-connect-transaction-id\", jsonData.data[0].id);",
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{ponto-connect-access-token}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "https://{{ibanity-hostname}}/ponto-connect/accounts/{{ponto-connect-account-id}}/transactions",
+											"protocol": "https",
+											"host": [
+												"{{ibanity-hostname}}"
+											],
+											"path": [
+												"ponto-connect",
+												"accounts",
+												"{{ponto-connect-account-id}}",
+												"transactions"
+											],
+											"query": [
+												{
+													"key": "limit",
+													"value": "100",
+													"disabled": true
+												},
+												{
+													"key": "after",
+													"value": "ed9c8a28-f986-469e-8fb5-4ae014e89c73",
+													"disabled": true
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "2.3.3.2: Get Transaction",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{ponto-connect-access-token}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "https://{{ibanity-hostname}}/ponto-connect/accounts/{{ponto-connect-account-id}}/transactions/{{ponto-connect-transaction-id}}",
+											"protocol": "https",
+											"host": [
+												"{{ibanity-hostname}}"
+											],
+											"path": [
+												"ponto-connect",
+												"accounts",
+												"{{ponto-connect-account-id}}",
+												"transactions",
+												"{{ponto-connect-transaction-id}}"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "2.3.4. Pending Transactions",
+							"item": [
+								{
+									"name": "2.3.4.1: List Pending Transactions",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"var jsonData = JSON.parse(responseBody);",
+													"postman.setEnvironmentVariable(\"ponto-connect-pending-transaction-id\", jsonData.data[0].id);",
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{ponto-connect-access-token}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "https://{{ibanity-hostname}}/ponto-connect/accounts/{{ponto-connect-account-id}}/pending-transactions",
+											"protocol": "https",
+											"host": [
+												"{{ibanity-hostname}}"
+											],
+											"path": [
+												"ponto-connect",
+												"accounts",
+												"{{ponto-connect-account-id}}",
+												"pending-transactions"
+											],
+											"query": [
+												{
+													"key": "limit",
+													"value": "100",
+													"disabled": true
+												},
+												{
+													"key": "after",
+													"value": "ed9c8a28-f986-469e-8fb5-4ae014e89c73",
+													"disabled": true
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "2.3.4.2: Get Pending Transaction",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{ponto-connect-access-token}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "https://{{ibanity-hostname}}/ponto-connect/accounts/{{ponto-connect-account-id}}/pending-transactions/{{ponto-connect-pending-transaction-id}}",
+											"protocol": "https",
+											"host": [
+												"{{ibanity-hostname}}"
+											],
+											"path": [
+												"ponto-connect",
+												"accounts",
+												"{{ponto-connect-account-id}}",
+												"pending-transactions",
+												"{{ponto-connect-pending-transaction-id}}"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "2.3.5. Synchronizations",
+							"item": [
+								{
+									"name": "2.3.5.1: Create Synchronization",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"var jsonData = JSON.parse(responseBody);",
+													"pm.environment.set(\"ponto-connect-synchronization-id\", jsonData.data.id);",
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{ponto-connect-access-token}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"name": "Content-Type",
+												"value": "application/json",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n  \"data\": {\n    \"type\": \"synchronization\",\n    \"attributes\": {\n      \"resourceType\": \"account\",\n      \"resourceId\": \"{{ponto-connect-account-id}}\",\n      \"customerIpAddress\": \"1.2.3.4\",\n      \"subtype\": \"accountTransactions\"\n    }\n  }\n}"
+										},
+										"url": {
+											"raw": "https://{{ibanity-hostname}}/ponto-connect/synchronizations",
+											"protocol": "https",
+											"host": [
+												"{{ibanity-hostname}}"
+											],
+											"path": [
+												"ponto-connect",
+												"synchronizations"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "2.3.5.2: Get Synchronization",
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{ponto-connect-access-token}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "GET",
+										"header": [
+											{
+												"key": "Content-Type",
+												"name": "Content-Type",
+												"value": "application/json",
+												"type": "text"
+											}
+										],
+										"url": {
+											"raw": "https://{{ibanity-hostname}}/ponto-connect/synchronizations/{{ponto-connect-synchronization-id}}",
+											"protocol": "https",
+											"host": [
+												"{{ibanity-hostname}}"
+											],
+											"path": [
+												"ponto-connect",
+												"synchronizations",
+												"{{ponto-connect-synchronization-id}}"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "2.3.6. Reauthorization",
+							"item": [
+								{
+									"name": "2.3.6.1: Create Reauthorization Request",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{ponto-connect-access-token}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n  \"data\": {\n    \"type\": \"reauthorizationRequest\",\n    \"attributes\": {\n      \"redirectUri\": \"{{ponto-connect-redirect-uri}}\"\n    }\n  }\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "https://{{ibanity-hostname}}/ponto-connect/accounts/{{ponto-connect-account-id}}/reauthorization-requests",
+											"protocol": "https",
+											"host": [
+												"{{ibanity-hostname}}"
+											],
+											"path": [
+												"ponto-connect",
+												"accounts",
+												"{{ponto-connect-account-id}}",
+												"reauthorization-requests"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "2.4. Payments",
+					"item": [
+						{
+							"name": "2.4.1. Single Payment",
+							"item": [
+								{
+									"name": "2.4.1.1: Create Payment",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"var jsonData = JSON.parse(responseBody);",
+													"pm.environment.set(\"ponto-connect-payment-id\", jsonData.data.id);",
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{ponto-connect-access-token}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "POST",
+										"header": [
+											{
+												"key": "Digest",
+												"value": "{{digestHeader}}",
+												"type": "default"
+											},
+											{
+												"key": "Signature",
+												"value": "{{signatureHeader}}",
+												"type": "default"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n  \"data\": {\n    \"type\": \"payment\",\n    \"attributes\": {\n      \"remittanceInformation\": \"payment\",\n      \"remittanceInformationType\": \"unstructured\",\n      \"currency\": \"EUR\",\n      \"amount\": 0.01,\n      \"creditorName\": \"Ibanity test\",\n      \"creditorAccountReference\": \"BE234567876543\",\n      \"creditorAccountReferenceType\": \"IBAN\",\n      \"redirectUri\": \"{{ponto-connect-redirect-uri}}\",\n      \"endToEndId\": \"SDQFDSFDZFDZF13RZEF\"\n    }\n  }\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "https://{{ibanity-hostname}}/ponto-connect/accounts/{{ponto-connect-account-id}}/payments",
+											"protocol": "https",
+											"host": [
+												"{{ibanity-hostname}}"
+											],
+											"path": [
+												"ponto-connect",
+												"accounts",
+												"{{ponto-connect-account-id}}",
+												"payments"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "2.4.1.2: Get Payment",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{ponto-connect-access-token}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "GET",
+										"header": [
+											{
+												"key": "Digest",
+												"value": "{{digestHeader}}",
+												"type": "default"
+											},
+											{
+												"key": "Signature",
+												"value": "{{signatureHeader}}",
+												"type": "default"
+											}
+										],
+										"url": {
+											"raw": "https://{{ibanity-hostname}}/ponto-connect/accounts/{{ponto-connect-account-id}}/payments/{{ponto-connect-payment-id}}",
+											"protocol": "https",
+											"host": [
+												"{{ibanity-hostname}}"
+											],
+											"path": [
+												"ponto-connect",
+												"accounts",
+												"{{ponto-connect-account-id}}",
+												"payments",
+												"{{ponto-connect-payment-id}}"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "2.4.2. Bulk Payments",
+							"item": [
+								{
+									"name": "2.4.2.1: Create Bulk Payment",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"var jsonData = JSON.parse(responseBody);",
+													"pm.environment.set(\"ponto-connect-bulk-payment-id\", jsonData.data.id);",
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{ponto-connect-access-token}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "POST",
+										"header": [
+											{
+												"key": "Digest",
+												"value": "{{digestHeader}}",
+												"type": "default"
+											},
+											{
+												"key": "Signature",
+												"value": "{{signatureHeader}}",
+												"type": "default"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n  \"data\": {\n    \"type\": \"bulkPayment\",\n    \"attributes\": {\n      \"reference\": \"Invoice Payments\",\n      \"redirectUri\": \"https://fake-tpp.com/payment-confirmation?payment=123\",\n      \"requestedExecutionDate\": \"2023-06-05\",\n      \"batchBookingPreferred\": true,\n      \"payments\": [\n        {\n          \"remittanceInformation\": \"payment 1\",\n          \"remittanceInformationType\": \"unstructured\",\n          \"currency\": \"EUR\",\n          \"amount\": 59,\n          \"creditorName\": \"Alex Creditor\",\n          \"creditorAccountReference\": \"BE234567876543\",\n          \"creditorAccountReferenceType\": \"IBAN\",\n          \"creditorAgent\": \"NBBEBEBB203\",\n          \"creditorAgentType\": \"BIC\"\n        },\n        {\n          \"remittanceInformation\": \"payment 2\",\n          \"remittanceInformationType\": \"unstructured\",\n          \"currency\": \"EUR\",\n          \"amount\": 25,\n          \"creditorName\": \"Pat Smith\",\n          \"creditorAccountReference\": \"BE234567876543\",\n          \"creditorAccountReferenceType\": \"IBAN\",\n          \"creditorAgent\": \"NBBEBEBB203\",\n          \"creditorAgentType\": \"BIC\"\n        }\n      ]\n    }\n  }\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "https://{{ibanity-hostname}}/ponto-connect/accounts/{{ponto-connect-account-id}}/bulk-payments",
+											"protocol": "https",
+											"host": [
+												"{{ibanity-hostname}}"
+											],
+											"path": [
+												"ponto-connect",
+												"accounts",
+												"{{ponto-connect-account-id}}",
+												"bulk-payments"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "2.4.2.2: Get Bulk Payment",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{ponto-connect-access-token}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "GET",
+										"header": [
+											{
+												"key": "Digest",
+												"value": "{{digestHeader}}",
+												"type": "default"
+											},
+											{
+												"key": "Signature",
+												"value": "{{signatureHeader}}",
+												"type": "default"
+											}
+										],
+										"url": {
+											"raw": "https://{{ibanity-hostname}}/ponto-connect/accounts/{{ponto-connect-account-id}}/bulk-payments/{{ponto-connect-bulk-payment-id}}",
+											"protocol": "https",
+											"host": [
+												"{{ibanity-hostname}}"
+											],
+											"path": [
+												"ponto-connect",
+												"accounts",
+												"{{ponto-connect-account-id}}",
+												"bulk-payments",
+												"{{ponto-connect-bulk-payment-id}}"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "2.5. Disconnect",
+					"item": [
+						{
+							"name": "2.5.1: Revoke Account",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{ponto-connect-access-token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "https://{{ibanity-hostname}}/ponto-connect/accounts/{{ponto-connect-account-id}}",
+									"protocol": "https",
+									"host": [
+										"{{ibanity-hostname}}"
+									],
+									"path": [
+										"ponto-connect",
+										"accounts",
+										"{{ponto-connect-account-id}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "2.5.3: Revoke token",
+							"request": {
+								"auth": {
+									"type": "basic",
+									"basic": [
+										{
+											"key": "password",
+											"value": "{{ponto-connect-client-secret}}",
+											"type": "string"
+										},
+										{
+											"key": "username",
+											"value": "{{ponto-connect-client-id}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"value": "application/x-www-form-urlencoded",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "urlencoded",
+									"urlencoded": [
+										{
+											"key": "token",
+											"value": "{{ponto-connect-refresh-token}}",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "https://{{ibanity-hostname}}/ponto-connect/oauth2/revoke",
+									"protocol": "https",
+									"host": [
+										"{{ibanity-hostname}}"
+									],
+									"path": [
+										"ponto-connect",
+										"oauth2",
+										"revoke"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"var url = require(\"url\");",
+					"if (!pm.globals.has(\"forgeJS\")) {",
+					"    console.log(\"Downloading forgejs\")",
+					"    pm.sendRequest(\"https://raw.githubusercontent.com/loveiset/RSAForPostman/master/forge.js\", function (err, res) {",
+					"        if (err) {",
+					"            console.log(\"an error occured\");",
+					"            console.log(err);",
+					"        }",
+					"        else {",
+					"            console.log(\"Setting forge JS\")",
+					"            pm.globals.set(\"forgeJS\", res.text());",
+					"            //console.log(pm.globals.get(\"forgeJS\"));",
+					"            eval(pm.globals.get(\"forgeJS\"));",
+					"            run();",
+					"        }",
+					"    });",
+					"}",
+					"else {",
+					"    eval(pm.globals.get(\"forgeJS\"));",
+					"    run();",
+					"}",
+					"function base64UrlEncode(raw) {",
+					"    return btoa(raw);",
+					"}",
+					"function replacePostmanVariables(value) {",
+					"    return value.replace(/\\{\\{[^\\{]+\\}\\}/g, function (variableTemplate) {",
+					"        let variableName = variableTemplate.replace(\"{{\", \"\").replace(\"}}\", \"\");",
+					"        return pm.variables.get(variableName);",
+					"    });",
+					"}",
+					"function buildHostHeader() {",
+					"    return pm.request.url.host.join(\".\");",
+					"}",
+					"function buildDigestHeader() {",
+					"    let rawBody;",
+					"    if (!!pm.request.body) {",
+					"        rawBody = pm.request.body.raw || \"\";",
+					"    } else {",
+					"        rawBody = \"\";",
+					"    }",
+					"    let instantiatedBody = replacePostmanVariables(rawBody);",
+					"    let messageDigest = forge.md.sha512.create();",
+					"    messageDigest.update(instantiatedBody);",
+					"    return \"SHA-512=\" + base64UrlEncode(messageDigest.digest().data);",
+					"}",
+					"function buildRequestQueryParams() {",
+					"    var returnValue = \"\";",
+					"    pm.request.url.query.members.forEach(function (i) {",
+					"        returnValue += i.key + \"=\" + i.value + \"&\"",
+					"    });",
+					"    if (returnValue.endsWith(\"&\")) {",
+					"        returnValue = returnValue.substring(0, returnValue.length - 1);",
+					"    }",
+					"    if (returnValue.length > 0) {",
+					"        return \"?\" + returnValue;",
+					"    } else {",
+					"        return \"\";",
+					"    }",
+					"}",
+					"function buildRequestTargetHeader() {",
+					"    let httpMethod = pm.request.method.toLowerCase();",
+					"    let requestPath = pm.request.url.path.join(\"/\");",
+					"    let query = buildRequestQueryParams();",
+					"    return `${httpMethod} /${requestPath}${query}`;",
+					"}",
+					"function addOptionalSignedHeaders(headers) {",
+					"    pm.request.headers.members.forEach(function (headerObject) {",
+					"        let headerName = headerObject.key.toLowerCase();",
+					"        if (headerName == \"authorization\" || headerName.match(/^ibanity-.+/) && headerObject.disabled !== true) {",
+					"            headers[headerName] = headerObject.value;",
+					"        }",
+					"    });",
+					"}",
+					"function buildSigningString(headers) {",
+					"    let rawSigningString = Object.keys(headers).map(function (headerName) {",
+					"        return `${headerName}: ${headers[headerName]}`;",
+					"    }).join(\"\\n\");",
+					"    return replacePostmanVariables(rawSigningString);",
+					"}",
+					"function buildSignedHeaderList(headers) {",
+					"    return Object.keys(headers).join(\" \");",
+					"}",
+					"function loadPrivateKey(privateKeyPem, privateKeyPassphrase) {",
+					"    return forge.pki.decryptRsaPrivateKey(privateKeyPem, privateKeyPassphrase);",
+					"}",
+					"function buildEncodedSignature(privateKey, signingString) {",
+					"    let messageDigest = forge.md.sha256.create();",
+					"    messageDigest.update(signingString, \"utf8\");",
+					"    let pss = forge.pss.create({",
+					"      md: forge.md.sha256.create(),",
+					"      mgf: forge.mgf.mgf1.create(forge.md.sha256.create()),",
+					"      saltLength: 32",
+					"    });",
+					"    let signature  = privateKey.sign(messageDigest, pss);",
+					"    return base64UrlEncode(signature)",
+					"}",
+					"function buildSignatureHeader(keyId, algorithm, signedHeaders, encodedSignature, created) {",
+					"    return `keyId=\"${keyId}\",created=\"${created}\",algorithm=\"${algorithm}\",headers=\"${signedHeaders}\",signature=\"${encodedSignature}\"`;",
+					"}",
+					"function run() {",
+					"    let created = Date.now() / 1000 | 0",
+					"    let keyId = pm.variables.get(\"signatureKeyId\");",
+					"    let privateKeyPem = pm.variables.get(\"signatureKey\");",
+					"    let privateKeyPassphrase = pm.variables.get(\"signatureKeyPassphrase\");",
+					"    let headers = {",
+					"        \"(request-target)\": buildRequestTargetHeader(),",
+					"        \"host\": buildHostHeader(),",
+					"        \"digest\": buildDigestHeader(),",
+					"        \"(created)\": created",
+					"    };",
+					"    addOptionalSignedHeaders(headers);",
+					"    let signingString = buildSigningString(headers);",
+					"    let algorithm = \"hs2019\";",
+					"    let signedHeaders = buildSignedHeaderList(headers);",
+					"    let privateKey = loadPrivateKey(privateKeyPem, privateKeyPassphrase);",
+					"    let encodedSignature = buildEncodedSignature(privateKey, signingString);",
+					"    let signatureHeader = buildSignatureHeader(keyId, algorithm, signedHeaders, encodedSignature, created);",
+					"    pm.variables.set(\"digestHeader\", headers.digest);",
+					"    pm.variables.set(\"signatureHeader\", signatureHeader);",
+					"}"
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "client_id",
+			"value": "Testing sandbox"
+		},
+		{
+			"key": "client_secret",
+			"value": "aLTBFSwHmpRpgm-r-PJBHQUzcx"
+		}
+	]
+}
