@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "699f022c-6fc8-496b-aafd-bcb7f7db331d",
+		"_postman_id": "83459257-9ce8-4a92-89aa-89a7bb231879",
 		"name": "Ibanity XS2A",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -1294,6 +1294,121 @@
 								}
 							},
 							"response": []
+						},
+						{
+							"name": "4.2.4.0: Delete Transactions for Application",
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"data\": {\n    \"type\": \"transactionDeleteRequest\",\n    \"attributes\": {\n        \"beforeDate\": \"2022-08-13T00:00:00.000Z\"\n    }\n  }\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://{{ibanity-hostname}}/xs2a/transaction-delete-requests",
+									"protocol": "https",
+									"host": [
+										"{{ibanity-hostname}}"
+									],
+									"path": [
+										"xs2a",
+										"transaction-delete-requests"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "4.2.5.0: Delete Transactions for Customer",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Digest",
+										"value": "{{digestHeader}}",
+										"type": "text"
+									},
+									{
+										"key": "Signature",
+										"value": "{{signatureHeader}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"data\": {\n    \"type\": \"transactionDeleteRequest\",\n    \"attributes\": {\n        \"beforeDate\": \"2022-08-13T00:00:00.000Z\"\n    }\n  }\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://{{ibanity-hostname}}/xs2a/customer/transaction-delete-requests",
+									"protocol": "https",
+									"host": [
+										"{{ibanity-hostname}}"
+									],
+									"path": [
+										"xs2a",
+										"customer",
+										"transaction-delete-requests"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "4.2.6.0: Delete Transactions for Account",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Digest",
+										"value": "{{digestHeader}}",
+										"type": "text"
+									},
+									{
+										"key": "Signature",
+										"value": "{{signatureHeader}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"data\": {\n    \"type\": \"transactionDeleteRequest\",\n    \"attributes\": {\n        \"beforeDate\": \"2023-04-20T00:00:00.000Z\"\n    }\n  }\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://{{ibanity-hostname}}/xs2a/customer/financial-institutions/{{xs2a-financial-institution-id}}/accounts/{{xs2a-account-id}}/transaction-delete-requests",
+									"protocol": "https",
+									"host": [
+										"{{ibanity-hostname}}"
+									],
+									"path": [
+										"xs2a",
+										"customer",
+										"financial-institutions",
+										"{{xs2a-financial-institution-id}}",
+										"accounts",
+										"{{xs2a-account-id}}",
+										"transaction-delete-requests"
+									]
+								}
+							},
+							"response": []
 						}
 					]
 				},
@@ -1554,6 +1669,9 @@
 								}
 							],
 							"request": {
+								"auth": {
+									"type": "noauth"
+								},
 								"method": "POST",
 								"header": [
 									{
