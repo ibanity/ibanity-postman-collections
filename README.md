@@ -10,6 +10,7 @@
 
 1) import the collection(s) into Postman
 2) Create Postman env
+3) Configure the client certificates in Postman linked to your application
 
 ### Postman env
 
@@ -29,5 +30,15 @@
 
 #### Isabel Connect
 
-* `isabel-connect-client-id`: the client-id from your Ponto Connect app that you can find in your Ibanity Developer Portal app
+* `isabel-connect-client-id`: the client-id from your Isabel Connect app that you can find in your Ibanity Developer Portal app
 * `isabel-connect-client-secret`: related secret
+
+#### Codabox Bankconnect
+
+* `codabox-bankconnect-client-id`: the client-id form your Codabox BankConnect app that you can find in your Ibanity Developer Portal app
+* `codabox-bankconnect-client-secret`: related secret
+
+#### Codabox Connect
+
+* `codabox-connect-client-id`: the client-id form your Codabox Connect app that you can find in your Ibanity Developer Portal app
+* `codabox-connect-client-secret`: related secret
