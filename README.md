@@ -30,7 +30,7 @@ In Postman, use the **Import** button on top left, then choose the provided coll
 * `ibanity-hostname`: the Ibanity API hostname (eg: api.ibanity.com)
 * `signatureKey`: the private key for signing request (RSA ...), encrypted with a password
 * `signatureKeyPassphrase`: the password of the private key
-* `signatureKey`: the signing certificate id. This can be found in "serialNumber" in the signing certificate DN
+* `signatureKeyId`: the signing certificate id. This can be found in "serialNumber" in the signing certificate DN
 
 #### Codabox Bankconnect
 * `codabox-bankconnect-client-id`: the client-id form your Codabox BankConnect app that you can find in your Ibanity Developer Portal app
