@@ -1,0 +1,354 @@
+{
+	"info": {
+		"_postman_id": "3401b315-adfd-492f-9796-3af195fb6cf0",
+		"name": "Ibanity Codabox Bankconnect",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "0. Root",
+			"item": [
+				{
+					"name": "0.0: API Root",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "https://{{ibanity-hostname}}/codabox-bankconnect",
+							"protocol": "https",
+							"host": [
+								"{{ibanity-hostname}}"
+							],
+							"path": [
+								"codabox-bankconnect"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "1. Authentication",
+			"item": [
+				{
+					"name": "1.1: Create Token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"var jsonData = pm.response.json();",
+									"access_token = jsonData.access_token",
+									"pm.environment.set(\"codabox-bankconnect-access-token\", access_token);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{codabox-bankconnect-client-secret}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{codabox-bankconnect-client-id}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "grant_type",
+									"value": "client_credentials",
+									"type": "text"
+								},
+								{
+									"key": "scope",
+									"value": "test",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "https://{{ibanity-hostname}}/codabox-bankconnect/oauth2/token",
+							"protocol": "https",
+							"host": [
+								"{{ibanity-hostname}}"
+							],
+							"path": [
+								"codabox-bankconnect",
+								"oauth2",
+								"token"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "2. Bank Accounts",
+			"item": [
+				{
+					"name": "2.1: Get Bank Accounts",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"var jsonData = pm.response.json();",
+									"pm.environment.set(\"codabox-bankconnect-account-id\", jsonData.data[0].id);",
+									"pm.environment.set(\"codabox-bankconnect-account-iban\", jsonData.data[0].attributes[\"iban\"]);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{codabox-bankconnect-access-token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "https://{{ibanity-hostname}}/codabox-bankconnect/bank-accounts",
+							"protocol": "https",
+							"host": [
+								"{{ibanity-hostname}}"
+							],
+							"path": [
+								"codabox-bankconnect",
+								"bank-accounts"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "3. Bank Account Mandates",
+			"item": [
+				{
+					"name": "3.1: Get Bank Mandates",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{codabox-bankconnect-access-token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/pdf",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "https://{{ibanity-hostname}}/codabox-bankconnect/bank-mandates/{{codabox-bankconnect-account-id}}",
+							"protocol": "https",
+							"host": [
+								"{{ibanity-hostname}}"
+							],
+							"path": [
+								"codabox-bankconnect",
+								"bank-mandates",
+								"{{codabox-bankconnect-account-id}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "4. Bank Account Approvals/Rejections/Desactivations",
+			"item": [
+				{
+					"name": "4.1: Create Bank Account Approvals",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/pdf",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"data\": {\n    \"type\": \"bankAccountApproval\",\n    \"attributes\": {\n      \"iban\": \"{{codabox-bankconnect-account-iban}}\",\n      \"accountType\": \"current\"\n    }\n  }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://{{ibanity-hostname}}/codabox-bankconnect/bank-account-approvals",
+							"protocol": "https",
+							"host": [
+								"{{ibanity-hostname}}"
+							],
+							"path": [
+								"codabox-bankconnect",
+								"bank-account-approvals"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "4.2: Create Bank Account Rejections",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/pdf",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"data\": {\n    \"type\": \"bankAccountRejection\",\n    \"attributes\": {\n      \"iban\": \"{{codabox-bankconnect-account-iban}}\",\n      \"reasonCode\": \"signerNotMandatary\"\n    }\n  }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://{{ibanity-hostname}}/codabox-bankconnect/bank-account-rejections",
+							"protocol": "https",
+							"host": [
+								"{{ibanity-hostname}}"
+							],
+							"path": [
+								"codabox-bankconnect",
+								"bank-account-rejections"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "4.3: Create Bank Account Deactivations",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/pdf",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"data\": {\n    \"type\": \"bankAccountDeactivation\",\n    \"attributes\": {\n      \"iban\": \"{{codabox-bankconnect-account-iban}}\",\n      \"timestamp\": \"2023-06-19T14:34:30.965Z\",\n      \"isAccountClosed\": true\n    }\n  }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://{{ibanity-hostname}}/codabox-bankconnect/bank-account-deactivations",
+							"protocol": "https",
+							"host": [
+								"{{ibanity-hostname}}"
+							],
+							"path": [
+								"codabox-bankconnect",
+								"bank-account-deactivations"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"auth": {
+				"type": "bearer",
+				"bearer": [
+					{
+						"key": "token",
+						"value": "{{codabox-bankconnect-access-token}}",
+						"type": "string"
+					}
+				]
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		}
+	]
+}
