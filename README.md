@@ -18,7 +18,7 @@
 * `ibanity-hostname`: the Ibanity API hostname (eg: api.ibanity.com)
 * `signatureKey`: the private key for signing request (RSA ...), encrypted with a password
 * `signatureKeyPassphrase`: the password of the private key
-* `signatureKey`: the signing certificate id. This can be found in "serialNumber" in the signing certificate DN
+* `signatureKeyId`: the signing certificate id. This can be found in "serialNumber" in the signing certificate DN
 
 #### Ponto Connect
 
