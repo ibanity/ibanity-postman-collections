@@ -567,6 +567,107 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "3.3: Get payment statuses",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Digest",
+								"value": "{{digestHeader}}",
+								"type": "text"
+							},
+							{
+								"key": "Signature",
+								"value": "{{signatureHeader}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "https://{{ibanity-hostname}}/isabel-connect/bulk-payment-initiation-requests/{{isabel-connect-payment-status-id}}/payment-status?notificationId=A",
+							"protocol": "https",
+							"host": [
+								"{{ibanity-hostname}}"
+							],
+							"path": [
+								"isabel-connect",
+								"bulk-payment-initiation-requests",
+								"{{isabel-connect-payment-status-id}}",
+								"payment-status"
+							],
+							"query": [
+								{
+									"key": "notificationId",
+									"value": "A"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "3.4: Get notifications",
+					"request": {
+						"method": "GET",
+						"header": [
+						{
+							"key": "Digest",
+							"value": "{{digestHeader}}",
+							"type": "text"
+						},
+						{
+							"key": "Signature",
+							"value": "{{signatureHeader}}",
+							"type": "text"
+						}
+						],
+						"url": {
+							"raw": "https://{{ibanity-hostname}}/isabel-connect/bulk-payment-initiation-requests/notifications",
+							"protocol": "https",
+							"host": [
+								"{{ibanity-hostname}}"
+							],
+							"path": [
+								"isabel-connect",
+								"bulk-payment-initiation-requests",
+								"notifications"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "3.5: Acknowledge notification",
+					"request": {
+						"method": "DELETE",
+						"header": [
+						{
+							"key": "Digest",
+							"value": "{{digestHeader}}",
+							"type": "text"
+						},
+						{
+							"key": "Signature",
+							"value": "{{signatureHeader}}",
+							"type": "text"
+						}
+						],
+						"url": {
+						"raw": "https://{{ibanity-hostname}}/isabel-connect/bulk-payment-initiation-requests/notifications/90000410224111",
+						"protocol": "https",
+						"host": [
+							"{{ibanity-hostname}}"
+						],
+						"path": [
+							"isabel-connect",
+							"bulk-payment-initiation-requests",
+							"notifications",
+							"90000410224111"
+						]
+						}
+					},
+					"response": []
 				}
 			]
 		},
